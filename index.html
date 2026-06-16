@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamerSafe 🛡️ Portal Pembeli Online</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <div id="gps-blocked-screen" class="hidden fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-rose-900/50 p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl space-y-4">
+            <div class="text-rose-500 text-5xl"><i class="fa-solid fa-location-dot animate-bounce"></i></div>
+            <h3 class="text-lg font-bold text-slate-200">Akses Lokasi GPS Diwajibkan</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">Sistem keamanan anti-fraud mendeteksi lokasi untuk mencegah penipuan lintas wilayah. Silakan izinkan lokasi browser Anda lalu muat ulang halaman.</p>
+            <button onclick="window.location.reload()" class="w-full bg-slate-800 hover:bg-slate-700 text-xs py-2.5 rounded-xl font-semibold cursor-pointer border border-slate-700">Muat Ulang Halaman</button>
+        </div>
+    </div>
+
+    <div id="gate-screen" class="fixed inset-0 bg-slate-950 z-40 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl space-y-4">
+            <div class="text-indigo-500 text-4xl"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+                <h3 class="text-base font-bold text-slate-200">GamerSafe Gate Pembeli</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Masukkan token kamar cloud yang diberikan oleh pihak admin.</p>
+            </div>
+            <input type="text" id="input-token-gate" placeholder="CONTOH: ROOM-1234" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 text-center uppercase tracking-widest text-xs font-mono text-amber-400 focus:outline-none focus:border-indigo-500">
+            <button onclick="verifikasiTokenMasukKamar()" class="w-full bg-indigo-600 hover:bg-indigo-500 font-semibold py-3 rounded-xl cursor-pointer text-xs shadow-lg transition-all">
+                Validasi & Masuk Kamar
+            </button>
+        </div>
+    </div>
+
+    <header class="border-b border-slate-900 bg-slate-900/50 backdrop-blur p-4">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-indigo-500 text-lg"><i class="fa-solid fa-user-shield"></i></span>
+                <div>
+                    <h1 class="text-xs font-bold uppercase tracking-wider">Siber Panel: Buyer</h1>
+                    <p id="label-room-head" class="text-[10px] text-amber-400 font-mono">ROOM: -</p>
+                </div>
+            </div>
+            <span id="badge-status-top" class="text-[9px] bg-slate-950 border border-slate-800 px-2 py-1 rounded-full font-mono font-medium text-slate-400">MEMUAT...</span>
+        </div>
+    </header>
+
+    <main class="max-w-xl w-full mx-auto p-4 flex-grow space-y-5">
+        <div id="box-step1-input" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <div class="border-b border-slate-800 pb-2">
+                <h2 class="text-xs font-bold uppercase text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-file-pen text-indigo-400"></i> Form Kesepakatan Transaksi</h2>
+                <p class="text-[10px] text-slate-400 mt-0.5">Isi data ini secara jujur untuk dikonfirmasi oleh penjual.</p>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1 font-medium">Nama Game / Jenis Produk Digital</label>
+                    <input type="text" id="gameType" placeholder="Misal: Mobile Legends, Valorant, dll" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-indigo-500 text-slate-200">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1 font-medium">Nominal Harga Sepakat (Rupiah)</label>
+                    <input type="number" id="amount" placeholder="Contoh: 150000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-indigo-500 text-slate-200 font-mono">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1 font-medium">Nomor DANA/GOPAY Anda (Untuk Refund Jikalau Batal)</label>
+                    <input type="text" id="buyerEwallet" placeholder="DANA - 0812xxxx (A/N Nama)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-indigo-500 text-slate-200">
+                </div>
+                <button onclick="buyerAjukanDataKeServer()" class="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-3 rounded-xl cursor-pointer transition-all shadow-md mt-2">
+                    Kunci & Kirim Kesepakatan ke Seller
+                </button>
+            </div>
+        </div>
+
+        <div id="box-wait-seller" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-3 shadow-xl">
+            <div class="text-amber-500 text-3xl animate-spin"><i class="fa-solid fa-circle-notch"></i></div>
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Menunggu Respon Penjual</h3>
+            <p class="text-[11px] text-slate-400 leading-relaxed">Data harga dan e-wallet refund Anda sudah terkirim. Sekarang penjual sedang memeriksa kesepakatan harga di HP mereka.</p>
+        </div>
+
+        <div id="box-step2-pay" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <div class="border-b border-slate-800 pb-2 text-center">
+                <h2 class="text-xs font-bold uppercase text-amber-400"><i class="fa-solid fa-wallet"></i> INSTRUKSI PEMBAYARAN AMAN</h2>
+                <p class="text-[10px] text-slate-400 mt-0.5">Penjual sepakat! Silakan transfer agar dana diamankan sistem.</p>
+            </div>
+            
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-center">
+                <p id="pay-gate-title" class="text-xs font-bold text-slate-300 font-mono">GOPAY ADMIN</p>
+                <p id="pay-gate-detail" class="text-lg font-bold text-white tracking-wide font-mono select-all">0812-3456-7890</p>
+                <p class="text-[10px] text-slate-500">Klik/Sentuh nomor di atas untuk menyalin otomatis.</p>
+            </div>
+
+            <div class="bg-indigo-950/40 border border-indigo-900/50 p-3 rounded-xl text-[10px] text-indigo-300 leading-relaxed space-y-1">
+                <p class="font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Syarat & Ketentuan Sistem Rekber:</p>
+                <p>1. Nominal transfer wajib sesuai dengan harga kesepakatan.</p>
+                <p>2. Setelah transfer, kirim bukti transaksi ke WhatsApp Admin.</p>
+                <p>3. Denda pemotongan saldo Rp 15.000 jika terjadi pembatalan sepihak setelah dana masuk.</p>
+            </div>
+
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl text-center">
+                <p class="text-[10px] text-slate-400 font-medium flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-hourglass-half animate-pulse text-amber-500"></i> Status: Menunggu Verifikasi Manual Admin...
+                </p>
+            </div>
+        </div>
+
+        <div id="box-step3-secured" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <div class="bg-emerald-950/50 border border-emerald-900 text-center py-3 rounded-xl">
+                <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-lock"></i> DANA SUDAH AMAN DI ADMIN
+                </h3>
+                <p class="text-[10px] text-slate-400 mt-0.5">Penjual diwajibkan menyerahkan data akun sekarang.</p>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed text-center">Mohon tetap berada di halaman ini. Begitu penjual menginput data akun dan sandi loginnnya, instruksi pengecekan data akan langsung muncul secara otomatis di bawah ini.</p>
+            <div class="flex items-center justify-center gap-2 py-2 text-slate-500 font-mono text-[10px]">
+                <i class="fa-solid fa-tower-cell animate-pulse text-emerald-500"></i> Sinkronisasi Alur Enkripsi Cloud...
+            </div>
+        </div>
+
+        <div id="box-step4-check-account" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <div class="border-b border-slate-800 pb-2">
+                <h2 class="text-xs font-bold uppercase text-rose-400 flex items-center gap-1.5"><i class="fa-solid fa-key"></i> DATA AKUN DITERIMA DARI SERVER</h2>
+                <p class="text-[10px] text-slate-400 mt-0.5">Silakan amankan akun ini sekarang sebelum dana dicairkan.</p>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 font-mono text-xs text-slate-300">
+                <p><strong>ID / Email Akun:</strong> <span id="view-id-akun" class="text-white font-bold select-all bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded"></span></p>
+                <p><strong>Password Akun:</strong> <span id="view-pass-akun" class="text-white font-bold select-all bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded"></span></p>
+            </div>
+
+            <div class="bg-rose-950/40 border border-rose-900/50 p-3 rounded-xl text-[10px] text-rose-300 leading-relaxed">
+                <strong><i class="fa-solid fa-shield-halved"></i> PERINGATAN BUYER:</strong> Masuk ke game/platform akun tersebut, periksa kelayakan spesifikasi produk, lalu **ganti email serta kata sandinya** menjadi milik Anda sendiri agar penjual tidak bisa mengambilnya kembali.
+            </div>
+
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl text-center text-slate-400 text-[10px]">
+                <i class="fa-solid fa-bullhorn text-amber-500"></i> Jika akun sudah selesai diamankan secara total, hubungi Admin via WhatsApp untuk menginstruksikan pencairan dana ke penjual.
+            </div>
+        </div>
+
+        <div id="box-step5-finish" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-3 shadow-xl">
+            <div class="text-emerald-400 text-4xl"><i class="fa-solid fa-circle-check"></i></div>
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono">TRANSAKSI SELESAI & SUKSES</h3>
+            <p class="text-[11px] text-slate-400 leading-relaxed">Dana aman dari admin telah resmi dicairkan ke dompet penjual. Terima kasih telah menggunakan infrastruktur keamanan GamerSafe Cyber Cloud Escrow!</p>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-900 p-3 text-center text-[9px] text-slate-600 font-mono">
+        &copy; 2026 GamerSafe Network Inc. Powered by MySQL Filess.io
+    </footer>
+
+    <script>
+        // === CONFIGURATION URL BACKEND LOCALHOST ===
+        const MOCK_API_BASE = "http://localhost:3000/api/rooms";
+
+        let ROOM_SERVER_ID = ""; 
+        let ROOM_CODE_STR = "";
+        let COORD_BUYER = "-";
+        let LAST_STATUS = "";
+
+        // REQUEST GPS LIVE DI AWAL
+        navigator.geolocation.getCurrentPosition(function(position) {
+            COORD_BUYER = `${position.coords.latitude}, ${position.coords.longitude}`;
+        }, function(err) {
+            console.log("GPS Blocked");
+        });
+
+        // VALIDASI TOKEN PAS MASUK GATE
+        function verifikasiTokenMasukKamar() {
+            const tokenInput = document.getElementById('input-token-gate').value.trim().toUpperCase();
+            if(!tokenInput) return alert("Masukkan token room!");
+
+            fetch(`${MOCK_API_BASE}?roomCode=${tokenInput}`)
+            .then(res => res.json())
+            .then(data => {
+                if(!data || data.length === 0) {
+                    alert("❌ Token Kamar Tidak Terdaftar di MySQL!");
+                    return;
+                }
+                
+                const room = data[0]; // Ambil data room pertamanya
+                ROOM_SERVER_ID = room.id; 
+                ROOM_CODE_STR = room.roomCode;
+
+                document.getElementById('gate-screen').classList.add('hidden');
+                document.getElementById('label-room-head').innerText = `ROOM ID: ${ROOM_CODE_STR}`;
+                
+                // Load info pembayaran admin dari localStorage local milik admin (atau default jika kosong)
+                const payConfig = JSON.parse(localStorage.getItem('rekber_payment_config')) || {nama: "GOPAY ADMIN", detail: "0812-3456-7890"};
+                document.getElementById('pay-gate-title').innerText = payConfig.nama.toUpperCase();
+                document.getElementById('pay-gate-detail').innerText = payConfig.detail;
+
+                mulaiLoopingPantauServer();
+            })
+            .catch(err => {
+                alert("Gagal menghubungi server database!");
+            });
+        }
+
+        function mulaiLoopingPantauServer() {
+            cekDataServerEksis();
+            setInterval(cekDataServerEksis, 4000); // Sinkronisasi alur per 4 detik
+        }
+
+        function cekDataServerEksis() {
+            if(!ROOM_SERVER_ID) return;
+
+            fetch(`${MOCK_API_BASE}/${ROOM_SERVER_ID}`)
+            .then(res => res.json())
+            .then(room => {
+                if(room.status === LAST_STATUS) return; 
+                LAST_STATUS = room.status;
+
+                document.getElementById('badge-status-top').innerText = room.status.toUpperCase();
+
+                // HIDE ALL BOXES FIRST
+                document.getElementById('box-step1-input').classList.add('hidden');
+                document.getElementById('box-wait-seller').classList.add('hidden');
+                document.getElementById('box-step2-pay').classList.add('hidden');
+                document.getElementById('box-step3-secured').classList.add('hidden');
+                document.getElementById('box-step4-check-account').classList.add('hidden');
+                document.getElementById('box-step5-finish').classList.add('hidden');
+
+                // ROUTING INTERFACE ALUR STATUS
+                if(room.status === "Menunggu Input Kesepakatan Buyer") {
+                    document.getElementById('box-step1-input').classList.remove('hidden');
+                } 
+                else if(room.status === "Menunggu Konfirmasi Harga Seller") {
+                    document.getElementById('box-wait-seller').classList.remove('hidden');
+                } 
+                else if(room.status === "Menunggu Pembayaran Buyer") {
+                    document.getElementById('box-step2-pay').classList.remove('hidden');
+                } 
+                else if(room.status === "Dana Aman di Admin") {
+                    document.getElementById('box-step3-secured').classList.remove('hidden');
+                } 
+                else if(room.status === "Proses Verifikasi Admin") {
+                    document.getElementById('view-id-akun').innerText = room.akun_id;
+                    document.getElementById('view-pass-akun').innerText = room.akun_pass;
+                    document.getElementById('box-step4-check-account').classList.remove('hidden');
+                } 
+                else if(room.status === "Selesai & Dicairkan") {
+                    document.getElementById('box-step5-finish').classList.remove('hidden');
+                }
+            });
+        }
+
+        // UPDATE DATA KESEPAKATAN HARGA KE MYSQL VIA PUT
+        function buyerAjukanDataKeServer() {
+            const game = document.getElementById('gameType').value.trim();
+            const price = document.getElementById('amount').value.trim();
+            const wallet = document.getElementById('buyerEwallet').value.trim();
+
+            if(!game || !price || !wallet) return alert("⚠️ Selesaikan pengisian formulir!");
+
+            fetch(`${MOCK_API_BASE}/${ROOM_SERVER_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    game: game,
+                    price: price,
+                    buyer_wallet: wallet,
+                    status: "Menunggu Konfirmasi Harga Seller",
+                    loc_buyer: COORD_BUYER
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("✅ Sukses! Data kesepakatan dikunci di database.");
+                LAST_STATUS = ""; 
+                cekDataServerEksis();
+            })
+            .catch(err => alert("Gagal mengirim data kesepakatan!"));
+        }
+        
+        window.onload = function() {
+            navigator.geolocation.getCurrentPosition(function(p){}, function(err) {
+                document.getElementById('gps-blocked-screen').classList.remove('hidden');
+                document.getElementById('gate-screen').classList.add('hidden');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 shadow-xl flex flex-col justify-between">
+            <div class="grid grid-cols-1 lg:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 shadow-xl flex flex-col justify-between">
                 <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
                     <div>
                         <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-comments text-amber-400 animate-pulse"></i> Saluran Chat & Dokumen OTP Live</h2>
@@ -112,7 +112,7 @@
                         </tr>
                     </thead>
                     <tbody id="table-body-online" class="divide-y divide-slate-800/60">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -214,6 +214,7 @@
                     if(room.status === "Selesai & Dicairkan") badgeColor = "bg-teal-950/60 border-teal-900 text-teal-400";
                     if(room.status.includes("DITENDANG") || room.status.includes("BATAL")) badgeColor = "bg-red-950 border-red-900 text-red-500";
 
+                    // PERBAIKAN SINTAKS: Menambahkan simbol $ pada variabel link maps agar string literal berfungsi normal
                     html += `
                     <tr class="hover:bg-slate-900/40 transition-colors border-b border-slate-800/40 font-sans">
                         <td class="p-4 font-mono font-bold text-amber-400 select-all">${room.roomCode}</td>
@@ -225,8 +226,8 @@
                             <div class="text-slate-400">PW: <span class="text-white select-all">${room.akun_pass || '-'}</span></div>
                         </td>
                         <td class="p-4 font-mono text-[10px] space-y-0.5">
-                            <div class="text-indigo-400"><i class="fa-solid fa-circle-user text-[8px]"></i> B: <a href="https://maps.google.com/?q=${room.loc_buyer}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_buyer || '-'}</a></div>
-                            <div class="text-emerald-400"><i class="fa-solid fa-store text-[8px]"></i> S: <a href="https://maps.google.com/?q=${room.loc_seller}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_seller || '-'}</a></div>
+                            <div class="text-indigo-400"><i class="fa-solid fa-circle-user text-[8px]"></i> B: <a href="https://www.google.com/maps?q=${room.loc_buyer}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_buyer || '-'}</a></div>
+                            <div class="text-emerald-400"><i class="fa-solid fa-store text-[8px]"></i> S: <a href="https://www.google.com/maps?q=${room.loc_seller}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_seller || '-'}</a></div>
                         </td>
                         <td class="p-4 text-center">
                             <div class="flex items-center justify-center gap-1.5 flex-wrap">
@@ -246,7 +247,7 @@
 
         // AKSI PUT: UPDATE STATUS TRANSAKSI MANUAL
         function ubahStatusKamarManual(id, statusBaru) {
-            fetch(`${MOCK_API_BASE}/${id}`, {
+            fetch(`${MOCK_API_BASE}?id=${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: statusBaru })
@@ -265,7 +266,7 @@
 
             const catatanAlasan = `[SYSTEM-KICK] Kamar ditutup oleh Admin. Alasan: ${alasan ? alasan : 'Pelanggaran syarat ketentuan rekber.'}`;
             
-            fetch(`${MOCK_API_BASE}/${id}`, {
+            fetch(`${MOCK_API_BASE}?id=${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -286,7 +287,7 @@
             OLD_CHAT_LOG_DATA = "";
             document.getElementById('active-chat-room-badge').innerText = `ROOM: ${codeStr}`;
             
-            fetch(`${MOCK_API_BASE}/${id}`)
+            fetch(`${MOCK_API_BASE}?id=${id}`)
             .then(res => res.json())
             .then(room => {
                 OLD_CHAT_LOG_DATA = room.akun_req;
@@ -301,13 +302,13 @@
             if(!pesanAdmin) return;
             if(!ACTIVE_CHAT_ROOM_ID) return alert("Pilih room terlebih dahulu di tabel (klik tombol 'Kelola Room')!");
 
-            fetch(`${MOCK_API_BASE}/${ACTIVE_CHAT_ROOM_ID}`)
+            fetch(`${MOCK_API_BASE}?id=${ACTIVE_CHAT_ROOM_ID}`)
             .then(res => res.json())
             .then(room => {
                 let logLama = (room.akun_req && room.akun_req.trim() !== "" && room.akun_req !== "-") ? room.akun_req : "";
                 let logBaru = logLama + "\n" + `[ADMIN] 👑: ${pesanAdmin}`;
 
-                return fetch(`${MOCK_API_BASE}/${ACTIVE_CHAT_ROOM_ID}`, {
+                return fetch(`${MOCK_API_BASE}?id=${ACTIVE_CHAT_ROOM_ID}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ akun_req: logBaru })

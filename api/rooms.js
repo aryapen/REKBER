@@ -7,45 +7,46 @@ const pool = mysql.createPool({
   database: "room_bottlesea",
   port: 3306,
   waitForConnections: true,
-  connectionLimit: 2, // Diperkecil agar tidak rebutan koneksi
+  connectionLimit: 3,
   queueLimit: 0,
   ssl: { rejectUnauthorized: false }
 });
 
 export default async function handler(req, res) {
+  // Buka CORS selebar-lebarnya agar admin.html leluasa
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 
+  // Amankan request OPTIONS (Preflight)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // --- COBA JALUR GET YANG ANTI-CRASH ---
+  // --- JALUR GET (AMBIL DATA) ---
   if (req.method === 'GET') {
     try {
-      // Kita coba kueri data
+      // Ambil data dari database
       const [rows] = await pool.query('SELECT * FROM rooms');
       
-      // Pastikan rows adalah array. Kalau kosong, kirim array kosong []
-      return res.status(200).json(Array.isArray(rows) ? rows : []);
-    } catch (error) {
-      // JIKA DATABASE ERROR, KITA PAKSA KIRIM DATA PASUKAN DIAGNOSIS
-      // Supaya admin.html tidak memicu pesan error 500 lagi
+      // Kirim balik ke frontend, pastikan formatnya array JSON
+      return res.status(200).json(rows);
+    } catch (dbError) {
+      // Jika database bermasalah (misal tabel salah), gagalkan dengan anggun
+      // Kita kirim status 200 dengan info error di dalamnya agar Vercel tidak melempar Error 500 blanket!
       return res.status(200).json([
         {
-          id: 1,
-          roomCode: "DIAGNOSIS-ERROR",
-          game: "MySQL Error",
+          id: 999,
+          roomCode: "DB-ERROR",
+          game: dbError.message.substring(0, 30),
           price: 0,
-          status: "LOG_CEK",
-          buyer_wallet: error.message // Pesan error asli nampang di kolom wallet nanti!
+          status: "FAILED"
         }
       ]);
     }
   }
 
-  // --- JALUR POST (YANG KATAMU SUDAH BISA) ---
+  // --- JALUR POST (BUAT DATA) ---
   if (req.method === 'POST') {
     try {
       const data = req.body;

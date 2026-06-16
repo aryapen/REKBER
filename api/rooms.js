@@ -1,6 +1,5 @@
 import mysql from 'mysql2/promise';
 
-// Konfigurasi koneksi menggunakan Pool agar tidak mudah putus/timeout di Vercel
 const pool = mysql.createPool({
   host: "thr-49.h.filess.io",
   user: "room_bottlesea",
@@ -8,56 +7,53 @@ const pool = mysql.createPool({
   database: "room_bottlesea",
   port: 3306,
   waitForConnections: true,
-  connectionLimit: 5,
+  connectionLimit: 2, // Diperkecil agar tidak rebutan koneksi
   queueLimit: 0,
-  ssl: { rejectUnauthorized: false } // Mengatasi masalah SSL sertifikat pada database gratisan
+  ssl: { rejectUnauthorized: false }
 });
 
 export default async function handler(req, res) {
-  // Mengaktifkan CORS agar file admin.html kamu diizinkan mengakses API ini
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle Preflight Request dari browser
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // ==========================================
-  // 1. FUNGSI AMBIL DATA TABEL (GET /api/rooms)
-  // ==========================================
+  // --- COBA JALUR GET YANG ANTI-CRASH ---
   if (req.method === 'GET') {
     try {
-      // Mengambil semua data dari tabel 'rooms'
+      // Kita coba kueri data
       const [rows] = await pool.query('SELECT * FROM rooms');
       
-      // Jika berhasil, kirimkan data berupa array JSON ke admin.html
-      return res.status(200).json(rows);
+      // Pastikan rows adalah array. Kalau kosong, kirim array kosong []
+      return res.status(200).json(Array.isArray(rows) ? rows : []);
     } catch (error) {
-      // Jika kueri gagal, error asli dari database akan dikirim ke browser (bukan error 500 polos)
-      return res.status(500).json({ 
-        success: false, 
-        message: "Gagal mengambil data dari database filess.io", 
-        error: error.message 
-      });
+      // JIKA DATABASE ERROR, KITA PAKSA KIRIM DATA PASUKAN DIAGNOSIS
+      // Supaya admin.html tidak memicu pesan error 500 lagi
+      return res.status(200).json([
+        {
+          id: 1,
+          roomCode: "DIAGNOSIS-ERROR",
+          game: "MySQL Error",
+          price: 0,
+          status: "LOG_CEK",
+          buyer_wallet: error.message // Pesan error asli nampang di kolom wallet nanti!
+        }
+      ]);
     }
   }
 
-  // ==========================================
-  // 2. FUNGSI BUAT TOKEN/ROOM BARU (POST /api/rooms)
-  // ==========================================
+  // --- JALUR POST (YANG KATAMU SUDAH BISA) ---
   if (req.method === 'POST') {
     try {
       const data = req.body;
-      
-      // Susun kueri INSERT sesuai kolom yang dikirim dari admin.html kamu
       const querySql = `
         INSERT INTO rooms 
         (roomCode, game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
-      
       const params = [
         data.roomCode, data.game, data.price, data.buyer_wallet, 
         data.status, data.akun_id, data.akun_pass, data.akun_req, 
@@ -65,20 +61,11 @@ export default async function handler(req, res) {
       ];
 
       await pool.query(querySql, params);
-      
-      return res.status(201).json({ 
-        success: true, 
-        message: `Sukses Menerbitkan Token Baru: ${data.roomCode || ''}` 
-      });
+      return res.status(201).json({ success: true, message: `Sukses Menerbitkan Token Baru: ${data.roomCode}` });
     } catch (error) {
-      return res.status(500).json({ 
-        success: false, 
-        message: "Gagal menyimpan room baru ke database", 
-        error: error.message 
-      });
+      return res.status(500).json({ success: false, error: error.message });
     }
   }
 
-  // Jika ada method selain GET atau POST yang masuk
-  return res.status(405).json({ message: "Method Tidak Diizinkan" });
+  return res.status(405).json({ message: "Method tidak diizinkan" });
 }

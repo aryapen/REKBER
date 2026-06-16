@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Ekosistem Escrow Cloud GamerSafe",
-  "main": "api/room.js",
   "dependencies": {
     "mysql2": "^3.11.0"
   }

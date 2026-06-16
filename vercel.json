@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/rooms",
+      "destination": "/api/rooms.js"
+    },
+    {
+      "source": "/api/rooms/:id",
+      "destination": "/api/rooms.js?id=:id"
+    }
+  ]
+}

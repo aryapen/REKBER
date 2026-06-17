@@ -1,72 +1,60 @@
-import mysql from 'mysql2/promise';
+import mysql from 'mysql2/promise'; // Gunakan versi promise agar rapi
 
+// 1. Inisialisasi Pool (Batasi maksimal 2-3 koneksi saja agar tidak menyentuh limit 5 di Filess.io)
 const pool = mysql.createPool({
-  host: "thr-49.h.filess.io",
-  user: "room_bottlesea",
-  password: "f09cf68286cbcbba65e8c8874450d82c1472af53",
-  database: "room_bottlesea",
-  port: 3306,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,
-  connectionLimit: 3,
-  queueLimit: 0,
-  ssl: { rejectUnauthorized: false }
+  connectionLimit: 3, // KUNCI UTAMA: Batasi koneksi untuk Free Tier Filess.io!
+  queueLimit: 0
 });
 
 export default async function handler(req, res) {
-  // Buka CORS selebar-lebarnya agar admin.html leluasa
+  // Tambahkan CORS Header agar admin.html bisa akses jika beda domain
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Amankan request OPTIONS (Preflight)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // --- JALUR GET (AMBIL DATA) ---
-  if (req.method === 'GET') {
-    try {
-      // Ambil data dari database
-      const [rows] = await pool.query('SELECT * FROM rooms');
-      
-      // Kirim balik ke frontend, pastikan formatnya array JSON
-      return res.status(200).json(rows);
-    } catch (dbError) {
-      // Jika database bermasalah (misal tabel salah), gagalkan dengan anggun
-      // Kita kirim status 200 dengan info error di dalamnya agar Vercel tidak melempar Error 500 blanket!
-      return res.status(200).json([
-        {
-          id: 999,
-          roomCode: "DB-ERROR",
-          game: dbError.message.substring(0, 30),
-          price: 0,
-          status: "FAILED"
-        }
-      ]);
-    }
-  }
-
-  // --- JALUR POST (BUAT DATA) ---
+  // === PROSES POST (TERBITKAN TOKEN BARU) ===
   if (req.method === 'POST') {
     try {
-      const data = req.body;
-      const querySql = `
-        INSERT INTO rooms 
-        (roomCode, game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-      const params = [
-        data.roomCode, data.game, data.price, data.buyer_wallet, 
-        data.status, data.akun_id, data.akun_pass, data.akun_req, 
-        data.loc_buyer, data.loc_seller
-      ];
+      const { roomCode, game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller } = req.body;
 
-      await pool.query(querySql, params);
-      return res.status(201).json({ success: true, message: `Sukses Menerbitkan Token Baru: ${data.roomCode}` });
+      // Konversi price menjadi Angka (Integer) agar tidak ditolak MySQL jika tipe kolomnya INT
+      const numericPrice = parseInt(price) || 0;
+
+      // Jalankan Query INSERT
+      const [result] = await pool.query(
+        `INSERT INTO rooms (roomCode, game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [roomCode, game, numericPrice, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller]
+      );
+
+      return res.status(200).json({ success: true, id: result.insertId });
+
     } catch (error) {
-      return res.status(500).json({ success: false, error: error.message });
+      console.error("MySQL Error:", error);
+      // Mengembalikan pesan error asli ke frontend agar mudah dilacak di Network Tab
+      return res.status(500).json({ error: error.message });
     }
   }
 
-  return res.status(405).json({ message: "Method tidak diizinkan" });
+  // === PROSES GET (BACA DATA UNTUK TABEL) ===
+  if (req.method === 'GET') {
+    try {
+      const [rows] = await pool.query('SELECT * FROM rooms ORDER BY id DESC');
+      return res.status(200).json(rows);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  return res.status(405).json({ message: 'Method tidak diizinkan' });
 }

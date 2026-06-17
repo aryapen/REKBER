@@ -1,19 +1,16 @@
-import mysql from 'mysql2/promise'; // Gunakan versi promise agar rapi
+import pg from 'pg';
+const { Pool } = pg;
 
-// 1. Inisialisasi Pool (Batasi maksimal 2-3 koneksi saja agar tidak menyentuh limit 5 di Filess.io)
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306,
-  waitForConnections: true,
-  connectionLimit: 3, // KUNCI UTAMA: Batasi koneksi untuk Free Tier Filess.io!
-  queueLimit: 0
+// Inisialisasi koneksi pool ke Supabase menggunakan variabel DATABASE_URL di Vercel
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false // Wajib true/diaktifkan untuk koneksi cloud aman Supabase
+  }
 });
 
 export default async function handler(req, res) {
-  // Tambahkan CORS Header agar admin.html bisa akses jika beda domain
+  // Atur CORS Header agar semua file HTML (admin, pembeli, penjual) bisa akses aman
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -22,36 +19,42 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // === PROSES POST (TERBITKAN TOKEN BARU) ===
-  if (req.method === 'POST') {
+  // === 1. PROSES GET (MEMBACA DATA UNTUK TABEL & MONITORING) ===
+  if (req.method === 'GET') {
     try {
-      const { roomCode, game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller } = req.body;
-
-      // Konversi price menjadi Angka (Integer) agar tidak ditolak MySQL jika tipe kolomnya INT
-      const numericPrice = parseInt(price) || 0;
-
-      // Jalankan Query INSERT
-      const [result] = await pool.query(
-        `INSERT INTO rooms (roomCode, game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [roomCode, game, numericPrice, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller]
-      );
-
-      return res.status(200).json({ success: true, id: result.insertId });
-
+      // Mengambil semua data kamar, diurutkan dari yang paling baru (id terbesar)
+      const result = await pool.query('SELECT * FROM rooms ORDER BY id DESC');
+      return res.status(200).json(result.rows);
     } catch (error) {
-      console.error("MySQL Error:", error);
-      // Mengembalikan pesan error asli ke frontend agar mudah dilacak di Network Tab
+      console.error("Supabase GET Error:", error);
       return res.status(500).json({ error: error.message });
     }
   }
 
-  // === PROSES GET (BACA DATA UNTUK TABEL) ===
-  if (req.method === 'GET') {
+  // === 2. PROSES POST (TERBITKAN TOKEN KAMAR BARU DARI ADMIN.HTML) ===
+  if (req.method === 'POST') {
     try {
-      const [rows] = await pool.query('SELECT * FROM rooms ORDER BY id DESC');
-      return res.status(200).json(rows);
+      const { roomCode, game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller } = req.body;
+
+      // Pastikan harga dikonversi ke angka integer agar cocok dengan tipe data BIGINT di Supabase
+      const numericPrice = parseInt(price) || 0;
+
+      // Query PostgreSQL menggunakan parameter dolar ($1, $2, dst.) dan kolom berhuruf kapital wajib dibungkus kutip dua ""
+      const text = `
+        INSERT INTO rooms ("roomCode", game, price, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+        RETURNING id
+      `;
+      
+      const values = [roomCode, game, numericPrice, buyer_wallet, status, akun_id, akun_pass, akun_req, loc_buyer, loc_seller];
+      
+      const result = await pool.query(text, values);
+
+      // Kembalikan tanda sukses ke frontend admin.html
+      return res.status(200).json({ success: true, id: result.rows[0].id });
+
     } catch (error) {
+      console.error("Supabase POST Error:", error);
       return res.status(500).json({ error: error.message });
     }
   }

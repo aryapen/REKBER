@@ -32,7 +32,7 @@
                 <div class="bg-rose-950/60 border border-rose-900 p-3 rounded-xl text-rose-500 text-xl"><i class="fa-solid fa-network-wired"></i></div>
                 <div>
                     <h1 class="text-sm font-bold uppercase tracking-wider text-slate-200">GamerSafe Cyber Escrow Architecture</h1>
-                    <p class="text-[11px] text-slate-400 font-mono">Database Status: <span class="text-emerald-400">MySQL Connected (Filess.io)</span></p>
+                    <p class="text-[11px] text-slate-400 font-mono">Database Status: <span class="text-emerald-400">Mock API Connected</span></p>
                 </div>
             </div>
             <div class="flex flex-wrap gap-2">
@@ -90,8 +90,8 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
             <div class="p-4 border-b border-slate-800 flex justify-between items-center flex-wrap gap-2">
                 <div>
-                    <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-table text-indigo-400"></i> Data Monitor Transaksi Aktif MySQL</h2>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Terintegrasi langsung secara real-time dengan server cloud serverless.</p>
+                    <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-table text-indigo-400"></i> Data Monitor Transaksi Aktif Mock API</h2>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Terintegrasi langsung secara real-time dengan server cloud Mock API.</p>
                 </div>
                 <div class="text-[10px] bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl text-slate-400 font-mono">
                     <i class="fa-solid fa-rotate text-indigo-400 animate-spin mr-1"></i> Auto-Sync Cloud: <span class="text-white">Active (4s)</span>
@@ -119,8 +119,8 @@
     </div>
 
     <script>
-        // === CONFIGURATION URL BACKEND VIA VERCEL SERVERLESS ===
-        const MOCK_API_BASE = "/api/rooms";
+        // === CONFIGURATION URL BACKEND CLONE MOCK API ===
+        const MOCK_API_BASE = "https://6a3293ecc6ca2aee43854080.mockapi.io/room";
 
         let ACTIVE_CHAT_ROOM_ID = "";
         let OLD_CHAT_LOG_DATA = "";
@@ -182,10 +182,10 @@
                 alert(`✅ Sukses Menerbitkan Token Baru: ${randomCode}`);
                 renderAdminTableOnline();
             })
-            .catch(err => alert("Gagal menyambung ke API Vercel/MySQL Serverless!"));
+            .catch(err => alert("Gagal menyambung ke server Mock API!"));
         }
 
-        // RENDER TABEL UTAMA DARI DATA MYSQL
+        // RENDER TABEL UTAMA DARI DATA MOCK API
         function renderAdminTableOnline() {
             fetch(MOCK_API_BASE)
             .then(res => res.json())
@@ -194,7 +194,7 @@
                 let html = "";
 
                 if(!data || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-600 italic font-mono">Belum ada kamar siber yang terdaftar di cloud MySQL.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-600 italic font-mono">Belum ada kamar siber yang terdaftar di cloud Mock API.</td></tr>`;
                     return;
                 }
 
@@ -214,7 +214,6 @@
                     if(room.status === "Selesai & Dicairkan") badgeColor = "bg-teal-950/60 border-teal-900 text-teal-400";
                     if(room.status.includes("DITENDANG") || room.status.includes("BATAL")) badgeColor = "bg-red-950 border-red-900 text-red-500";
 
-                    // PERBAIKAN SINTAKS: Menambahkan simbol $ pada variabel link maps agar string literal berfungsi normal
                     html += `
                     <tr class="hover:bg-slate-900/40 transition-colors border-b border-slate-800/40 font-sans">
                         <td class="p-4 font-mono font-bold text-amber-400 select-all">${room.roomCode}</td>
@@ -226,8 +225,8 @@
                             <div class="text-slate-400">PW: <span class="text-white select-all">${room.akun_pass || '-'}</span></div>
                         </td>
                         <td class="p-4 font-mono text-[10px] space-y-0.5">
-                            <div class="text-indigo-400"><i class="fa-solid fa-circle-user text-[8px]"></i> B: <a href="https://www.google.com/maps?q=${room.loc_buyer}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_buyer || '-'}</a></div>
-                            <div class="text-emerald-400"><i class="fa-solid fa-store text-[8px]"></i> S: <a href="https://www.google.com/maps?q=${room.loc_seller}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_seller || '-'}</a></div>
+                            <div class="text-indigo-400"><i class="fa-solid fa-circle-user text-[8px]"></i> B: <a href="http://maps.google.com/?q=${room.loc_buyer}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_buyer || '-'}</a></div>
+                            <div class="text-emerald-400"><i class="fa-solid fa-store text-[8px]"></i> S: <a href="http://maps.google.com/?q=${room.loc_seller}" target="_blank" class="underline text-slate-300 hover:text-white">${room.loc_seller || '-'}</a></div>
                         </td>
                         <td class="p-4 text-center">
                             <div class="flex items-center justify-center gap-1.5 flex-wrap">
@@ -242,12 +241,12 @@
                 });
                 tbody.innerHTML = html;
             })
-            .catch(err => console.log("Gagal memuat tabel database online. Pastikan serverless verson aktif!"));
+            .catch(err => console.log("Gagal memuat tabel database online. Pastikan Mock API aktif!"));
         }
 
-        // AKSI PUT: UPDATE STATUS TRANSAKSI MANUAL
+        // AKSI PUT: UPDATE STATUS TRANSAKSI MANUAL (STANDAR REST API MOCKAPI)
         function ubahStatusKamarManual(id, statusBaru) {
-            fetch(`${MOCK_API_BASE}?id=${id}`, {
+            fetch(`${MOCK_API_BASE}/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: statusBaru })
@@ -262,16 +261,16 @@
         // FITUR KICK DENGAN PESAN ALASAN TENDANG
         function kickDanBatalkanRoomDenganAlasan(id) {
             const alasan = prompt("Masukkan alasan kenapa transaksi ini ditendang/dibatalkan admin:");
-            if (alasan === null) return; // Batal membatalkan
+            if (alasan === null) return; 
 
             const catatanAlasan = `[SYSTEM-KICK] Kamar ditutup oleh Admin. Alasan: ${alasan ? alasan : 'Pelanggaran syarat ketentuan rekber.'}`;
             
-            fetch(`${MOCK_API_BASE}?id=${id}`, {
+            fetch(`${MOCK_API_BASE}/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     status: "TRANSAKSI DITENDANG ADMIN",
-                    akun_req: catatanAlasan // Masukkan alasan ke stream teks untuk memblokir layar klien
+                    akun_req: catatanAlasan 
                 })
             })
             .then(res => res.json())
@@ -281,13 +280,13 @@
             });
         }
 
-        // FITUR PILIH KELOLA CHAT ROOM SEGITIGA
+        // FITUR PILIH KELOLA CHAT ROOM
         function pilihKelolaRoomObrolan(id, codeStr) {
             ACTIVE_CHAT_ROOM_ID = id;
             OLD_CHAT_LOG_DATA = "";
             document.getElementById('active-chat-room-badge').innerText = `ROOM: ${codeStr}`;
             
-            fetch(`${MOCK_API_BASE}?id=${id}`)
+            fetch(`${MOCK_API_BASE}/${id}`)
             .then(res => res.json())
             .then(room => {
                 OLD_CHAT_LOG_DATA = room.akun_req;
@@ -295,20 +294,20 @@
             });
         }
 
-        // FITUR ADMIN KIRIM CHAT LIVE BERBEDA STRUKTUR (👑 ADMIN)
+        // FITUR ADMIN KIRIM CHAT LIVE
         function adminKirimPesanKeRoom() {
             const inputEl = document.getElementById('admin-chat-input');
             const pesanAdmin = inputEl.value.trim();
             if(!pesanAdmin) return;
             if(!ACTIVE_CHAT_ROOM_ID) return alert("Pilih room terlebih dahulu di tabel (klik tombol 'Kelola Room')!");
 
-            fetch(`${MOCK_API_BASE}?id=${ACTIVE_CHAT_ROOM_ID}`)
+            fetch(`${MOCK_API_BASE}/${ACTIVE_CHAT_ROOM_ID}`)
             .then(res => res.json())
             .then(room => {
                 let logLama = (room.akun_req && room.akun_req.trim() !== "" && room.akun_req !== "-") ? room.akun_req : "";
                 let logBaru = logLama + "\n" + `[ADMIN] 👑: ${pesanAdmin}`;
 
-                return fetch(`${MOCK_API_BASE}?id=${ACTIVE_CHAT_ROOM_ID}`, {
+                return fetch(`${MOCK_API_BASE}/${ACTIVE_CHAT_ROOM_ID}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ akun_req: logBaru })
@@ -333,19 +332,16 @@
             baris.forEach(b => {
                 if(b.trim() !== "") {
                     if (b.startsWith("[ADMIN]")) {
-                        // Desain Chat Khas Milik Admin (Merah/Amber & Bermahkota)
                         html += `<div class="bg-rose-950/50 border border-rose-900/60 p-2 rounded-xl text-amber-400 font-bold shadow-sm"><i class="fa-solid fa-crown text-rose-500 text-[10px]"></i> ${b.replace("[ADMIN] 👑:", "ADMIN MASTER:")}</div>`;
                     } else if (b.startsWith("[SYSTEM-KICK]")) {
-                        // Notifikasi Tendangan Sistem
                         html += `<div class="bg-red-900/40 border border-red-900 p-2 rounded-xl text-red-400 font-sans text-center text-[10px] font-bold"><i class="fa-solid fa-triangle-exclamation"></i> ${b}</div>`;
                     } else {
-                        // Chat OTP Bawaan dari Penjual/Pembeli
                         html += `<div class="bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800/80 text-emerald-400"><i class="fa-solid fa-message text-[9px] text-indigo-500"></i> ${b}</div>`;
                     }
                 }
             });
             container.innerHTML = html;
-            container.scrollTop = container.scrollHeight; // Auto scroll kebawah otomatis
+            container.scrollTop = container.scrollHeight; 
         }
 
         // FITUR DOWNLOAD LOG CADANGAN MASTER DATA
@@ -371,7 +367,7 @@
                 const blob = new Blob([teksLog], { type: "text/plain;charset=utf-8" });
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(blob);
-                link.download = `LOG-REKBER-MYSQL-${new Date().toISOString().slice(0,10)}.txt`;
+                link.download = `LOG-REKBER-MOCKAPI-${new Date().toISOString().slice(0,10)}.txt`;
                 link.click();
             });
         }

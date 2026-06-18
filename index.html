@@ -151,8 +151,8 @@
     </footer>
 
     <script>
-        // === CONFIGURATION URL BACKEND VIA VERCEL SERVERLESS ===
-        const MOCK_API_BASE = "/api/rooms";
+        // === CONFIGURATION URL BACKEND CLONE MOCK API ===
+        const MOCK_API_BASE = "https://6a3293ecc6ca2aee43854080.mockapi.io/room";
 
         let CURRENT_ROOM_DATABASE_ID = "";
         let OLD_CHAT_LOG_DATA = "";
@@ -186,7 +186,7 @@
             .then(data => {
                 const room = data.find(r => r.roomCode === token);
                 if(!room) {
-                    alert("❌ Token Kamar Rekber Tidak Ditemukan di Cloud Database MySQL!");
+                    alert("❌ Token Kamar Rekber Tidak Ditemukan di Cloud Database!");
                     return;
                 }
 
@@ -212,11 +212,11 @@
             });
         }
 
-        // SINKRONISASI BERKALA (GET STATUS, CHAT & AKUN)
+        // SINKRONISASI BERKALA (GET STATUS, CHAT & AKUN BERDASARKAN REST ID)
         function sinkronisasiRealtimeEscrowBuyer() {
             if(!CURRENT_ROOM_DATABASE_ID) return;
 
-            fetch(`${MOCK_API_BASE}?id=${CURRENT_ROOM_DATABASE_ID}`)
+            fetch(`${MOCK_API_BASE}/${CURRENT_ROOM_DATABASE_ID}`)
             .then(res => res.json())
             .then(room => {
                 // Proteksi tendangan live dari admin
@@ -269,7 +269,7 @@
             });
         }
 
-        // AKSI PUT: KUNCI KESEPAKATAN HARGA AWAL
+        // AKSI PUT: KUNCI KESEPAKATAN HARGA AWAL (MOCK API URL STANDAR)
         function simpanKesepakatanAwalBuyer() {
             const g = document.getElementById('form-game').value.trim();
             const p = document.getElementById('form-price').value.trim();
@@ -277,7 +277,7 @@
 
             if(!g || !p || !w) return alert("Wajib mengisi Detail Game, Harga, dan Dompet Refund!");
 
-            fetch(`${MOCK_API_BASE}?id=${CURRENT_ROOM_DATABASE_ID}`, {
+            fetch(`${MOCK_API_BASE}/${CURRENT_ROOM_DATABASE_ID}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -285,7 +285,7 @@
                     price: p,
                     buyer_wallet: w,
                     status: "Menunggu Pembayaran Buyer",
-                    loc_buyer: CURRENT_GPS_STRING // Kirim koordinat radar GPS pembeli ke MySQL
+                    loc_buyer: CURRENT_GPS_STRING // Kirim koordinat radar GPS pembeli
                 })
             })
             .then(res => res.json())
@@ -295,19 +295,19 @@
             });
         }
 
-        // AKSI PUT: KIRIM PESAN CHAT BARU KLIEN
+        // AKSI PUT: KIRIM PESAN CHAT BARU KLIEN BUYER
         function buyerKirimPesanKeStreamChat() {
             const input = document.getElementById('buyer-chat-input');
             const teks = input.value.trim();
             if(!teks) return;
 
-            fetch(`${MOCK_API_BASE}?id=${CURRENT_ROOM_DATABASE_ID}`)
+            fetch(`${MOCK_API_BASE}/${CURRENT_ROOM_DATABASE_ID}`)
             .then(res => res.json())
             .then(room => {
                 let logLama = (room.akun_req && room.akun_req !== "-") ? room.akun_req : "";
                 let logBaru = logLama + "\n" + `[BUYER]: ${teks}`;
 
-                return fetch(`${MOCK_API_BASE}?id=${CURRENT_ROOM_DATABASE_ID}`, {
+                return fetch(`${MOCK_API_BASE}/${CURRENT_ROOM_DATABASE_ID}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ akun_req: logBaru })

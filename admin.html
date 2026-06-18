@@ -2,70 +2,84 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GamerSafe 👑 MASTER PANEL KONTROL CLOUD</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Kustom scrollbar untuk area obrolan mikro */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #020617; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-rose-500/30 selection:text-rose-200">
 
-    <div id="login-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl space-y-4">
-            <div class="text-rose-500 text-3xl"><i class="fa-solid fa-crown"></i></div>
-            <div>
-                <h3 class="text-lg font-bold text-slate-200">Otorisasi Otoritas Admin</h3>
-                <p class="text-xs text-slate-400 mt-1">Masukkan kata sandi master enkripsi untuk mengakses server rekber online.</p>
+    <div id="login-screen" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800/80 p-6 md:p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl space-y-5 animate-in fade-in zoom-in duration-200">
+            <div class="inline-flex bg-rose-950/50 border border-rose-900/60 p-4 rounded-2xl text-rose-500 text-3xl shadow-inner"><i class="fa-solid fa-crown"></i></div>
+            <div class="space-y-1">
+                <h3 class="text-lg font-bold text-slate-200 tracking-tight">Otoritas Admin Master</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Masukkan sandi enkripsi berkala untuk mengakses pangkalan data utama.</p>
             </div>
-            <input type="password" id="admin-pass-input" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-center text-rose-400 font-mono tracking-widest focus:outline-none focus:border-rose-500">
-            <button onclick="verifikasiSandiMasterAdmin()" class="w-full bg-rose-600 hover:bg-rose-500 font-bold py-3 rounded-xl text-xs transition-all cursor-pointer">
-                Masuk Sistem Otoritas
-            </button>
+            <div class="space-y-3">
+                <input type="password" id="admin-pass-input" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3.5 text-sm text-center text-rose-400 font-mono tracking-widest focus:outline-none focus:border-rose-500/80 focus:ring-1 focus:ring-rose-500/30 transition-all">
+                <button onclick="verifikasiSandiMasterAdmin()" class="w-full bg-rose-600 hover:bg-rose-500 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl text-xs tracking-wider uppercase transition-all shadow-lg shadow-rose-950/40 cursor-pointer">
+                    Masuk Sistem Otoritas
+                </button>
+            </div>
         </div>
     </div>
 
-    <div id="main-admin-dashboard" class="hidden max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+    <div id="main-admin-dashboard" class="hidden max-w-7xl mx-auto p-3 sm:p-5 md:p-6 space-y-4 md:space-y-6">
         
-        <header class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl">
-            <div class="flex items-center gap-3.5">
-                <div class="bg-rose-950/60 border border-rose-900 p-3.5 rounded-xl text-rose-500 text-2xl animate-pulse"><i class="fa-solid fa-server"></i></div>
+        <header class="bg-slate-900 border border-slate-800/80 p-4 md:p-5 rounded-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 shadow-xl">
+            <div class="flex items-center gap-3.5 w-full lg:w-auto">
+                <div class="bg-rose-950/60 border border-rose-900/80 p-3 rounded-xl text-rose-500 text-xl md:text-2xl shrink-0"><i class="fa-solid fa-server"></i></div>
                 <div>
-                    <h1 class="text-md font-bold uppercase tracking-wider text-slate-200">GamerSafe: CLOUD CORE MONITORING</h1>
-                    <p class="text-xs text-slate-400 mt-0.5 font-mono">Status Node Server: <span class="text-emerald-400 font-bold">TERKONEKSI (MOCK_API)</span></p>
+                    <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-slate-200">GamerSafe Cloud Monitor</h1>
+                    <p class="text-[10px] md:text-xs text-slate-400 font-mono mt-0.5">Node: <span class="text-emerald-400 font-bold">LIVE_MOCKAPI</span></p>
                 </div>
             </div>
-            <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                <button onclick="bukaModalPengaturanMetodeBayar()" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer border border-slate-700">
-                    <i class="fa-solid fa-wallet text-amber-400 mr-1.5"></i> Config Pembayaran
+            
+            <div class="grid grid-cols-2 sm:flex flex-wrap gap-2 w-full lg:w-auto">
+                <button onclick="bukaModalPengaturanMetodeBayar()" class="col-span-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-[11px] md:text-xs font-bold py-3 px-3 md:py-2.5 md:px-4 rounded-xl transition-all cursor-pointer border border-slate-700/80 text-slate-200 text-center flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-wallet text-amber-400"></i> Gateway
                 </button>
-                <button onclick="eksporSeluruhDataDatabase()" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer border border-slate-700">
-                    <i class="fa-solid fa-download text-indigo-400 mr-1.5"></i> Ekspor Server Log
+                <button onclick="eksporSeluruhDataDatabase()" class="col-span-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-[11px] md:text-xs font-bold py-3 px-3 md:py-2.5 md:px-4 rounded-xl transition-all cursor-pointer border border-slate-700/80 text-slate-200 text-center flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-download text-indigo-400"></i> Ekspor Log
                 </button>
-                <button onclick="terbitkanTokenKamarBaru()" class="bg-rose-600 hover:bg-rose-500 text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg cursor-pointer">
-                    <i class="fa-solid fa-plus-circle mr-1.5"></i> Terbitkan Kamar Baru
+                <button onclick="terbitkanTokenKamarBaru()" class="col-span-2 sm:w-auto bg-rose-600 hover:bg-rose-500 active:scale-95 text-[11px] md:text-xs text-white font-bold py-3.5 px-5 md:py-2.5 rounded-xl transition-all shadow-lg shadow-rose-950/20 cursor-pointer text-center flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-plus-circle"></i> Terbitkan Kamar Baru
                 </button>
             </div>
         </header>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
-            <div class="p-4 bg-slate-900/50 border-b border-slate-800 flex justify-between items-center">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2"><i class="fa-solid fa-list-check text-rose-500"></i> Antrean Monitor Transaksi Aktif</h2>
-                <span class="text-[10px] bg-slate-950 px-2.5 py-1 border border-slate-800 text-slate-400 rounded-full font-mono">Auto Refresh: Live</span>
+        <div class="bg-slate-900 border border-slate-800/80 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-4 bg-slate-900/60 border-b border-slate-800 flex justify-between items-center">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2"><i class="fa-solid fa-list-check text-rose-500"></i> Antrean Transaksi</h2>
+                <span class="text-[9px] font-bold md:text-[10px] bg-slate-950 px-2.5 py-1 border border-slate-800 text-slate-400 rounded-full font-mono">Live Sync</span>
             </div>
-            <div class="overflow-x-auto">
+            
+            <div class="block lg:hidden p-3 space-y-4" id="admin-mobile-cards-container">
+                <div class="text-center text-slate-500 italic font-mono py-6 text-xs">Memuat database online cloud...</div>
+            </div>
+
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-slate-950/60 border-b border-slate-800 text-slate-400 font-mono text-[10px] uppercase">
+                        <tr class="bg-slate-950/60 border-b border-slate-800 text-slate-400 font-mono text-[10px] uppercase tracking-wider">
                             <th class="p-4">Detail Kamar</th>
-                            <th class="p-4">Informasi Produk & Harga</th>
-                            <th class="p-4">Radar GPS Pengguna</th>
-                            <th class="p-4">Data Vault Akun</th>
-                            <th class="p-4">Log Obrolan & Tindakan</th>
+                            <th class="p-4">Produk & Harga</th>
+                            <th class="p-4">Radar GPS</th>
+                            <th class="p-4">Vault Akun Seller</th>
+                            <th class="p-4">Log Obrolan</th>
                             <th class="p-4 text-center">Aksi Otoritas</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-main-table-body" class="divide-y divide-slate-900">
+                    <tbody id="admin-main-table-body" class="divide-y divide-slate-800/40">
                         <tr>
                             <td colspan="6" class="p-8 text-center text-slate-500 italic font-mono">Memuat database online cloud...</td>
                         </tr>
@@ -75,22 +89,22 @@
         </div>
     </div>
 
-    <div id="payment-config-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-gears text-amber-400"></i> Pengaturan Gateway</h3>
-                <button onclick="tutupModalPengaturanMetodeBayar()" class="text-slate-500 hover:text-slate-300 text-sm cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+    <div id="payment-config-modal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl max-w-sm w-full space-y-4 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-gears text-amber-400"></i> Gateway Config</h3>
+                <button onclick="tutupModalPengaturanMetodeBayar()" class="text-slate-500 hover:text-slate-300 w-7 h-7 flex items-center justify-center rounded-full bg-slate-950 border border-slate-800/60 text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-3 text-xs">
+            <div class="space-y-4 text-xs">
                 <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Nama Rekening / Metode Pembayaran</label>
-                    <input type="text" id="cfg-pay-name" placeholder="Contoh: BANK BCA OLEH ADMIN" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 focus:outline-none">
+                    <label class="block text-[10px] text-slate-400 mb-1 font-medium">Nama Metode / Bank</label>
+                    <input type="text" id="cfg-pay-name" placeholder="Contoh: BANK BCA OLEH ADMIN" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none text-slate-200">
                 </div>
                 <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Nomor Rekening & Nama Pemilik</label>
-                    <input type="text" id="cfg-pay-detail" placeholder="Contoh: 8290XXXX a/n Admin Master" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 focus:outline-none">
+                    <label class="block text-[10px] text-slate-400 mb-1 font-medium">No. Rekening & Nama Pemilik</label>
+                    <input type="text" id="cfg-pay-detail" placeholder="Contoh: 8290XXXX a/n Admin Master" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none text-slate-200">
                 </div>
-                <button onclick="simpanKonfigurasiMetodeBayarKeLokal()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl transition-all cursor-pointer">
+                <button onclick="simpanKonfigurasiMetodeBayarKeLokal()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl transition-all font-sans cursor-pointer active:scale-95 text-center">
                     Simpan Perubahan
                 </button>
             </div>
@@ -101,109 +115,169 @@
         // === CONFIGURATION URL BACKEND CLONE MOCK API ===
         const MOCK_API_BASE = "https://6a3293ecc6ca2aee4385407f.mockapi.io/room";
 
-        // PROTEKSI SANDI LOGIN PANEL MASTER
         function verifikasiSandiMasterAdmin() {
             const pass = document.getElementById('admin-pass-input').value;
             if(pass === "KOREKHITAM") {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('main-admin-dashboard').classList.remove('hidden');
                 
-                // Nyalakan sinkronisasi realtime database
                 renderAdminTableOnline();
-                setInterval(renderAdminTableOnline, 3000); // Polling update data per 3 detik
+                setInterval(renderAdminTableOnline, 3000); // Polling update database cloud
             } else {
                 alert("❌ Akses Ditolak! Sandi master salah.");
             }
         }
 
-        // AMBIL DATA (GET ALL MOCK API)
+        // RENDER DATA: MEMPROSES DUA OUTPUT (VERSI MOBIL CARD & VERSI DESKTOP TABLE)
         function renderAdminTableOnline() {
             fetch(MOCK_API_BASE)
-            .then(res => {
-                if(!res.ok) throw new Error();
-                return res.json();
-            })
+            .then(res => { if(!res.ok) throw new Error(); return res.json(); })
             .then(data => {
                 const tbody = document.getElementById('admin-main-table-body');
+                const mobileContainer = document.getElementById('admin-mobile-cards-container');
+                
                 if(!data || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-600 font-mono italic">Belum ada antrean transaksi rekber yang diterbitkan.</td></tr>`;
+                    const templateKosong = `<div class="text-center text-slate-600 font-mono italic p-6">Belum ada antrean transaksi rekber.</div>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-600 font-mono italic">Belum ada antrean transaksi rekber.</td></tr>`;
+                    mobileContainer.innerHTML = templateKosong;
                     return;
                 }
 
-                let html = "";
-                // Urutkan dari data id terbaru di paling atas
-                data.sort((a,b) => b.id - a.id).forEach(room => {
-                    
-                    // Filter Status Badge Warna
-                    let sColor = "text-slate-400 bg-slate-900 border-slate-800";
-                    if(room.status.includes("Buyer")) sColor = "text-indigo-400 bg-indigo-950/40 border-indigo-900/60";
-                    if(room.status.includes("Seller")) sColor = "text-amber-400 bg-amber-950/40 border-amber-900/60";
-                    if(room.status === "Dana Aman di Admin") sColor = "text-emerald-400 bg-emerald-950/50 border-emerald-900 font-bold";
-                    if(room.status === "Proses Verifikasi Admin") sColor = "text-rose-400 bg-rose-950/50 border-rose-900 font-bold animate-pulse";
-                    if(room.status === "Selesai & Dicairkan") sColor = "text-teal-400 bg-teal-950/40 border-teal-900/60";
-                    if(room.status.includes("DITENDANG")) sColor = "text-red-400 bg-red-950/40 border-red-900/60 font-mono";
+                data.sort((a,b) => b.id - a.id);
 
-                    // Formulasi Koordinat Maps Global
-                    let mapLinkBuyer = (room.loc_buyer && room.loc_buyer !== "-") ? `<a href="https://www.google.com/maps?q=${room.loc_buyer}" target="_blank" class="text-indigo-400 hover:underline"><i class="fa-solid fa-location-dot"></i> Buyer Map</a>` : "<span class='text-slate-600'>Belum Masuk</span>";
-                    let mapLinkSeller = (room.loc_seller && room.loc_seller !== "-") ? `<a href="https://www.google.com/maps?q=${room.loc_seller}" target="_blank" class="text-amber-400 hover:underline"><i class="fa-solid fa-location-dot"></i> Seller Map</a>` : "<span class='text-slate-600'>Belum Masuk</span>";
+                let desktopHtml = "";
+                let mobileHtml = "";
 
-                    html += `
-                        <tr class="hover:bg-slate-900/40 transition-colors">
+                data.forEach(room => {
+                    // Config Warna Badge Status
+                    let sColor = "text-slate-400 bg-slate-950 border-slate-800";
+                    if(room.status.includes("Buyer")) sColor = "text-indigo-400 bg-indigo-950/40 border-indigo-900/40";
+                    if(room.status.includes("Seller")) sColor = "text-amber-400 bg-amber-950/40 border-amber-900/40";
+                    if(room.status === "Dana Aman di Admin") sColor = "text-emerald-400 bg-emerald-950/50 border-emerald-900/60 font-bold";
+                    if(room.status === "Proses Verifikasi Admin") sColor = "text-rose-400 bg-rose-950/50 border-rose-900/60 font-bold animate-pulse";
+                    if(room.status === "Selesai & Dicairkan") sColor = "text-teal-400 bg-teal-950/40 border-teal-900/40";
+                    if(room.status.includes("DITENDANG")) sColor = "text-red-400 bg-red-950/40 border-red-900/40 font-mono";
+
+                    let mapLinkBuyer = (room.loc_buyer && room.loc_buyer !== "-") ? `<a href="https://maps.google.com/?q=${room.loc_buyer}" target="_blank" class="text-indigo-400 hover:underline"><i class="fa-solid fa-location-dot"></i> Buyer Map</a>` : "<span class='text-slate-600'>Belum Masuk</span>";
+                    let mapLinkSeller = (room.loc_seller && room.loc_seller !== "-") ? `<a href="https://maps.google.com/?q=${room.loc_seller}" target="_blank" class="text-amber-400 hover:underline"><i class="fa-solid fa-location-dot"></i> Seller Map</a>` : "<span class='text-slate-600'>Belum Masuk</span>";
+
+                    // 1. GENERATE OUTPUT VERSI HP (MOBILE CARDS Layout)
+                    mobileHtml += `
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3 shadow-md">
+                            <div class="flex justify-between items-start border-b border-slate-900 pb-2">
+                                <div class="font-mono">
+                                    <span class="text-[10px] text-slate-500 block">ID UNIT: ${room.id}</span>
+                                    <span class="text-sm font-bold text-amber-400 select-all tracking-wide">${room.roomCode}</span>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold border ${sColor}">${room.status}</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-900/40 p-2.5 rounded-lg border border-slate-900">
+                                <div>
+                                    <span class="text-[9px] text-slate-500 block">PRODUK/GAME:</span>
+                                    <span class="text-slate-200 font-medium">${room.game === "-" ? "Belum diinput" : room.game}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] text-slate-500 block">NOMINAL REKBER:</span>
+                                    <span class="text-emerald-400 font-bold font-mono">Rp ${parseInt(room.price).toLocaleString('id-ID')}</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                                <div class="bg-slate-900/20 p-2 rounded border border-slate-900/60">
+                                    <span class="text-[9px] text-slate-500 block">ID/EMAIL ACC:</span>
+                                    <span class="text-slate-300 font-bold select-all truncate block">${room.akun_id || '-'}</span>
+                                </div>
+                                <div class="bg-slate-900/20 p-2 rounded border border-slate-900/60">
+                                    <span class="text-[9px] text-slate-500 block">PASSWORD ACC:</span>
+                                    <span class="text-slate-300 font-bold select-all truncate block">${room.akun_pass || '-'}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-[10px] bg-slate-900/10 px-2 py-1.5 rounded font-mono border border-slate-900">
+                                <div class="flex gap-3">
+                                    <span>B: ${mapLinkBuyer}</span>
+                                    <span>S: ${mapLinkSeller}</span>
+                                </div>
+                                <div class="text-slate-500 truncate max-w-[100px]">Ref: ${room.buyer_wallet || '-'}</div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-mono text-slate-500 block">STREAM OBROLAN LIVE MIKRO:</span>
+                                <div class="w-full h-16 bg-slate-950 border border-slate-900 rounded-lg p-2 font-mono text-[9px] overflow-y-auto whitespace-pre-wrap text-slate-400 custom-scroll">${room.akun_req || 'Belum ada obrolan'}</div>
+                            </div>
+
+                            <div class="space-y-2 pt-1 border-t border-slate-900">
+                                <select onchange="ubahStatusTransaksiOtoritas('${room.id}', this.value)" class="w-full bg-slate-900 border border-slate-800 text-[11px] rounded-xl p-2.5 text-slate-200 font-medium">
+                                    <option value="" disabled selected>⚡ Ganti Status Transaksi Cloud</option>
+                                    <option value="Menunggu Input Kesepakatan Buyer">1. Reset Antrean Awal</option>
+                                    <option value="Dana Aman di Admin">2. Nyatakan Dana Aman ✔️</option>
+                                    <option value="Selesai & Dicairkan">3. Cairkan Dana Penjual 💸</option>
+                                </select>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button onclick="kirimPesanOtoritasAdmin('${room.id}')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 py-2.5 rounded-xl text-[11px] font-bold text-rose-400 flex items-center justify-center gap-1 cursor-pointer"><i class="fa-solid fa-bullhorn"></i> Chat</button>
+                                    <button onclick="tendangPenggunaOtoritas('${room.id}')" class="bg-red-950/40 border border-red-900/60 py-2.5 rounded-xl text-[11px] font-bold text-red-400 flex items-center justify-center gap-1 cursor-pointer"><i class="fa-solid fa-user-slash"></i> Kick</button>
+                                    <button onclick="bersihkanKamarDariCloud('${room.id}')" class="bg-slate-900 border border-slate-800 py-2.5 rounded-xl text-[11px] text-slate-400 flex items-center justify-center gap-1 cursor-pointer"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // 2. GENERATE OUTPUT VERSI LAPTOP (DESKTOP LAPTOP TABLE Layout)
+                    desktopHtml += `
+                        <tr class="hover:bg-slate-900/30 transition-colors">
                             <td class="p-4 font-mono space-y-1">
                                 <div class="text-[10px] text-slate-500">ID: ${room.id}</div>
                                 <div class="text-sm font-bold text-amber-400 select-all">${room.roomCode}</div>
-                                <div class="pt-1"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${sColor}">${room.status}</span></div>
+                                <div class="pt-1"><span class="px-2 py-0.5 rounded text-[9px] font-bold border ${sColor}">${room.status}</span></div>
                             </td>
                             <td class="p-4 space-y-1">
-                                <div class="font-medium text-slate-200">${room.game === "-" ? "<span class='text-slate-600 italic'>Belum diinput</span>" : room.game}</div>
+                                <div class="font-medium text-slate-200">${room.game === "-" ? "Belum diinput" : room.game}</div>
                                 <div class="font-mono text-emerald-400 font-bold">Rp ${room.price ? parseInt(room.price).toLocaleString('id-ID') : '0'}</div>
-                                <div class="text-[10px] text-slate-400 font-mono">Refund: ${room.buyer_wallet || '-'}</div>
+                                <div class="text-[10px] text-slate-500 font-mono">Refund: ${room.buyer_wallet || '-'}</div>
                             </td>
                             <td class="p-4 font-mono text-[11px] space-y-1">
                                 <div>${mapLinkBuyer}</div>
                                 <div>${mapLinkSeller}</div>
                             </td>
-                            <td class="p-4 font-mono text-[11px] space-y-0.5 bg-slate-950/20 max-w-[150px] truncate">
-                                <div class="text-[9px] text-slate-500">USER / ID:</div>
-                                <div class="text-slate-300 font-bold select-all">${room.akun_id || '-'}</div>
-                                <div class="text-[9px] text-slate-500 pt-0.5">PASSWORD:</div>
-                                <div class="text-slate-300 font-bold select-all">${room.akun_pass || '-'}</div>
+                            <td class="p-4 font-mono text-[11px] bg-slate-950/20 max-w-[140px] truncate space-y-0.5">
+                                <div class="text-slate-300 font-bold select-all">U: ${room.akun_id || '-'}</div>
+                                <div class="text-slate-300 font-bold select-all">P: ${room.akun_pass || '-'}</div>
                             </td>
                             <td class="p-4">
-                                <div class="w-56 h-20 bg-slate-950 rounded-xl p-2 border border-slate-800 font-mono text-[10px] overflow-y-auto whitespace-pre-wrap text-slate-400">${room.akun_req || 'Belum ada obrolan'}</div>
+                                <div class="w-52 h-20 bg-slate-950 rounded-xl p-2 border border-slate-800/80 font-mono text-[10px] overflow-y-auto whitespace-pre-wrap text-slate-400 custom-scroll">${room.akun_req || 'Belum ada obrolan'}</div>
                             </td>
                             <td class="p-4 text-center space-y-1.5 w-40">
-                                <select onchange="ubahStatusTransaksiOtoritas('${room.id}', this.value)" class="w-full bg-slate-950 border border-slate-800 text-[11px] rounded-lg p-1.5 focus:outline-none text-slate-300 font-sans">
+                                <select onchange="ubahStatusTransaksiOtoritas('${room.id}', this.value)" class="w-full bg-slate-950 border border-slate-800 text-[11px] rounded-lg p-1.5 focus:outline-none text-slate-300">
                                     <option value="" disabled selected>⚡ Ganti Status</option>
-                                    <option value="Menunggu Input Kesepakatan Buyer">1. Reset ke Awal</option>
-                                    <option value="Dana Aman di Admin">2. Dana Aman ✔️</option>
-                                    <option value="Selesai & Dicairkan">3. Cairkan Dana 💸</option>
+                                    <option value="Menunggu Input Kesepakatan Buyer">Reset Awal</option>
+                                    <option value="Dana Aman di Admin">Dana Aman ✔️</option>
+                                    <option value="Selesai & Dicairkan">Cairkan Dana 💸</option>
                                 </select>
-                                <div class="flex gap-1">
-                                    <button onclick="kirimPesanOtoritasAdmin('${room.id}')" class="flex-grow bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[10px] py-1 rounded-md font-bold transition-all cursor-pointer text-rose-400"><i class="fa-solid fa-bullhorn"></i> Chat</button>
-                                    <button onclick="tendangPenggunaOtoritas('${room.id}')" class="bg-red-950/60 hover:bg-red-900 border border-red-900/60 text-[10px] px-2 py-1 rounded-md text-red-400 font-bold transition-all cursor-pointer" title="Batalkan & Kick"><i class="fa-solid fa-user-slash"></i></button>
-                                    <button onclick="bersihkanKamarDariCloud('${room.id}')" class="bg-slate-950 hover:bg-slate-900 border border-slate-800 text-[10px] px-2 py-1 rounded-md text-slate-500 hover:text-red-400 transition-all cursor-pointer" title="Hapus Kamar Permanen"><i class="fa-solid fa-trash"></i></button>
+                                <div class="flex gap-1 text-[10px]">
+                                    <button onclick="kirimPesanOtoritasAdmin('${room.id}')" class="flex-grow bg-slate-800 hover:bg-slate-700 border border-slate-700 py-1 rounded text-rose-400 font-bold cursor-pointer"><i class="fa-solid fa-bullhorn"></i> Chat</button>
+                                    <button onclick="tendangPenggunaOtoritas('${room.id}')" class="bg-red-950/40 border border-red-900/60 px-2 py-1 rounded text-red-400 font-bold cursor-pointer"><i class="fa-solid fa-user-slash"></i></button>
+                                    <button onclick="bersihkanKamarDariCloud('${room.id}')" class="bg-slate-950 border border-slate-800 px-2 py-1 rounded text-slate-500 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
                     `;
                 });
-                tbody.innerHTML = html;
+
+                tbody.innerHTML = desktopHtml;
+                mobileContainer.innerHTML = mobileHtml;
             })
             .catch(() => {
-                const tbody = document.getElementById('admin-main-table-body');
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-rose-400 font-mono">Gagal memuat tabel database online. Pastikan Mock API aktif!</td></tr>`;
+                const errText = `<div class="text-center text-rose-400 font-mono py-6">Gagal memuat database cloud!</div>`;
+                document.getElementById('admin-main-table-body').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-rose-400 font-mono">Gagal memuat database cloud.</td></tr>`;
+                document.getElementById('admin-mobile-cards-container').innerHTML = errText;
             });
         }
 
-        // AKSI POST: TERBITKAN TOKEN REKBER BARU
         function terbitkanTokenKamarBaru() {
-            // Membuat kode unik acak 6 digit, misalnya: GSAFE-XYZ123
             const karakter = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
             let stringAcak = "";
-            for(let i=0; i<6; i++) {
-                stringAcak += karakter.charAt(Math.floor(Math.random() * karakter.length));
-            }
+            for(let i=0; i<6; i++) { stringAcak += karakter.charAt(Math.floor(Math.random() * karakter.length)); }
             const roomCodeFix = `GSAFE-${stringAcak}`;
 
             fetch(MOCK_API_BASE, {
@@ -212,14 +286,9 @@
                 body: JSON.stringify({
                     roomCode: roomCodeFix,
                     status: "Menunggu Input Kesepakatan Buyer",
-                    game: "-",
-                    price: "0",
-                    buyer_wallet: "-",
-                    akun_id: "-",
-                    akun_pass: "-",
+                    game: "-", price: "0", buyer_wallet: "-", akun_id: "-", akun_pass: "-",
                     akun_req: "[SYSTEM]: Kamar enkripsi berhasil didirikan oleh Admin.",
-                    loc_buyer: "-",
-                    loc_seller: "-"
+                    loc_buyer: "-", loc_seller: "-"
                 })
             })
             .then(res => res.json())
@@ -229,58 +298,45 @@
             });
         }
 
-        // AKSI PUT: GANTI STATUS TRANSAKSI
         function ubahStatusTransaksiOtoritas(id, statusBaru) {
             if(!statusBaru) return;
-
             fetch(`${MOCK_API_BASE}/${id}`)
             .then(res => res.json())
             .then(room => {
                 let chatLama = room.akun_req || "";
                 let chatBaru = chatLama + "\n" + `[SYSTEM]: Status diubah admin menjadi "${statusBaru}"`;
-
                 return fetch(`${MOCK_API_BASE}/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        status: statusBaru,
-                        akun_req: chatBaru
-                    })
+                    body: JSON.stringify({ status: statusBaru, akun_req: chatBaru })
                 });
             })
-            .then(res => res.json())
             .then(() => {
-                alert("✅ Status kamar rekber berhasil diperbarui.");
+                alert("✅ Status kamar berhasil diperbarui.");
                 renderAdminTableOnline();
             });
         }
 
-        // AKSI PUT: SEND CHAT BROADCAST ADMIN
         function kirimPesanOtoritasAdmin(id) {
             const pesan = prompt("Ketik pesan resmi / instruksi admin untuk room ini:");
             if(!pesan || pesan.trim() === "") return;
-
             fetch(`${MOCK_API_BASE}/${id}`)
             .then(res => res.json())
             .then(room => {
                 let logLama = room.akun_req || "";
                 let logBaru = logLama + "\n" + `[ADMIN] 👑: ${pesan}`;
-
                 return fetch(`${MOCK_API_BASE}/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ akun_req: logBaru })
                 });
             })
-            .then(res => res.json())
             .then(() => renderAdminTableOnline());
         }
 
-        // AKSI PUT: KICK / BLOKIR KAMAR
         function tendangPenggunaOtoritas(id) {
             const alasan = prompt("Masukkan alasan pembubaran/kick kamar ini:", "Transaksi dicurigai melakukan kecurangan / fraud.");
             if(alasan === null) return;
-
             fetch(`${MOCK_API_BASE}/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -289,28 +345,22 @@
                     akun_req: `[SYSTEM-KICK]: Kamar dibubarkan paksa oleh Admin Otoritas. Alasan: ${alasan}`
                 })
             })
-            .then(res => res.json())
             .then(() => {
                 alert("⚠️ Kamar berhasil dibubarkan paksa.");
                 renderAdminTableOnline();
             });
         }
 
-        // AKSI DELETE: HAPUS KAMAR PERMANEN DARI DATABASE CLOUD
         function bersihkanKamarDariCloud(id) {
-            if(confirm("Apakah Anda yakin ingin menghapus kamar ini secara permanen dari server cloud? Tindakan ini tidak dapat dibatalkan!")) {
-                fetch(`${MOCK_API_BASE}/${id}`, {
-                    method: 'DELETE'
-                })
-                .then(res => res.json())
+            if(confirm("Apakah Anda yakin ingin menghapus kamar ini secara permanen dari server cloud?")) {
+                fetch(`${MOCK_API_BASE}/${id}`, { method: 'DELETE' })
                 .then(() => {
-                    alert("🗑️ Kamar dihapus secara permanen dari cloud database.");
+                    alert("🗑️ Kamar dihapus secara permanen dari cloud.");
                     renderAdminTableOnline();
                 });
             }
         }
 
-        // MODAL CONFIG GATEWAY PEMBAYARAN LOCALSTORAGE
         function bukaModalPengaturanMetodeBayar() {
             document.getElementById('payment-config-modal').classList.remove('hidden');
             const dataSelesai = JSON.parse(localStorage.getItem('rekber_payment_config')) || {nama: "DANA ADMIN", detail: "0812-3456-7890"};
@@ -318,41 +368,26 @@
             document.getElementById('cfg-pay-detail').value = dataSelesai.detail;
         }
 
-        function tutupModalPengaturanMetodeBayar() {
-            document.getElementById('payment-config-modal').classList.add('hidden');
-        }
+        function tutupModalPengaturanMetodeBayar() { document.getElementById('payment-config-modal').classList.add('hidden'); }
 
         function simpanKonfigurasiMetodeBayarKeLokal() {
             const nm = document.getElementById('cfg-pay-name').value.trim();
             const dt = document.getElementById('cfg-pay-detail').value.trim();
-
             if(!nm || !dt) return alert("Semua form wajib diisi!");
-
             localStorage.setItem('rekber_payment_config', JSON.stringify({nama: nm, detail: dt}));
             alert("✅ Gateway instruksi transfer berhasil diperbarui!");
             tutupModalPengaturanMetodeBayar();
         }
 
-        // AMBIL LOG BACKUP DATABASE SECARA LENGKAP (.TXT)
         function eksporSeluruhDataDatabase() {
             fetch(MOCK_API_BASE)
             .then(res => res.json())
             .then(data => {
-                if(!data || data.length === 0) return alert("Database kosong, tidak ada log untuk diekspor.");
-
+                if(!data || data.length === 0) return alert("Database kosong.");
                 let teksLog = "=== GAMERSAFE ESCROW CLOUD SERVER LOG ===\r\n\r\n";
                 data.forEach(room => {
-                    teksLog += `ID SERVER    : ${room.id}\r\n`;
-                    teksLog += `KODE KAMAR   : ${room.roomCode}\r\n`;
-                    teksLog += `STATUS TRANSA: ${room.status}\r\n`;
-                    teksLog += `NAMA GAME    : ${room.game || '-'}\r\n`;
-                    teksLog += `NOMINAL      : Rp ${room.price ? parseInt(room.price).toLocaleString('id-ID') : '0'}\r\n`;
-                    teksLog += `REFUND BUYER : ${room.buyer_wallet || '-'}\r\n`;
-                    teksLog += `AKUN SELLER  : USER:[ ${room.akun_id || '-'} ] PASS:[ ${room.akun_pass || '-'} ]\r\n`;
-                    teksLog += `STREAM LOG   : \r\n${room.akun_req || '-'}\r\n`;
-                    teksLog += "=========================================================\r\n\r\n";
+                    teksLog += `ID SERVER    : ${room.id}\r\nKODE KAMAR   : ${room.roomCode}\r\nSTATUS TRANSA: ${room.status}\r\nNAMA GAME    : ${room.game || '-'}\r\nNOMINAL      : Rp ${room.price ? parseInt(room.price).toLocaleString('id-ID') : '0'}\r\nREFUND BUYER : ${room.buyer_wallet || '-'}\r\nAKUN SELLER  : USER:[ ${room.akun_id || '-'} ] PASS:[ ${room.akun_pass || '-'} ]\r\nSTREAM LOG   : \r\n${room.akun_req || '-'}\r\n=========================================================\r\n\r\n`;
                 });
-
                 const blob = new Blob([teksLog], { type: "text/plain;charset=utf-8" });
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(blob);

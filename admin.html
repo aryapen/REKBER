@@ -18,7 +18,7 @@
             </div>
             <div>
                 <h3 class="text-lg font-bold text-slate-100">GamerSafe Master Panel</h3>
-                <p class="text-xs text-slate-400 mt-1">Sistem Otentikasi Terenkripsi Administrator</p>
+                <p class="text-[11px] text-slate-400 mt-1">Sistem Otentikasi Terenkripsi Administrator</p>
             </div>
             <div class="space-y-3">
                 <input type="password" id="admin-password-input" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-center tracking-widest focus:outline-none focus:border-rose-500 transition-all text-white font-mono">
@@ -35,15 +35,15 @@
             <div class="flex items-center gap-3">
                 <div class="bg-rose-950/60 border border-rose-900 p-2.5 rounded-xl text-rose-400 text-xl"><i class="fa-solid fa-shield-halved"></i></div>
                 <div>
-                    <h1 class="text-xs font-bold uppercase tracking-wider text-slate-200">GamerSafe Server Framework v1.2.0</h1>
-                    <p class="text-[10px] text-slate-500 font-mono">Jaringan: <span class="text-emerald-400 font-bold">ONLINE & AUTO-DECTECT</span></p>
+                    <h1 class="text-xs font-bold uppercase tracking-wider text-slate-200">GamerSafe Server Framework v1.3.0</h1>
+                    <p class="text-[10px] text-slate-500 font-mono">Jaringan: <span class="text-emerald-400 font-bold">ONLINE & AUTO-DETECT</span></p>
                 </div>
             </div>
             
             <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 px-3 flex flex-col text-right font-mono">
                     <span class="text-[8px] text-slate-500 tracking-wider font-bold">REKENING UTAMA ADMIN:</span>
-                    <input type="text" id="cfg-wallet-display" onchange="updateKonfigurasiRekeningAdmin(this.value)" placeholder="DANA: 0812345678" class="bg-transparent border-none text-[10px] text-amber-400 font-bold text-right p-0 focus:outline-none w-48">
+                    <input type="text" id="cfg-wallet-display" oninput="updateKonfigurasiRekeningAdmin(this.value)" placeholder="DANA: 0812345678" class="bg-transparent border-none text-[10px] text-amber-400 font-bold text-right p-0 focus:outline-none w-48">
                 </div>
                 <button onclick="buatKamarTransaksiBaru()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold px-4 py-3 rounded-xl transition-all cursor-pointer shadow-lg shadow-rose-600/10">
                     <i class="fa-solid fa-plus mr-1"></i> Kamar Baru
@@ -64,12 +64,11 @@
 
         function verifikasiLoginAdminMaster() {
             const pass = document.getElementById('admin-password-input').value;
-            // Password bawaan sistem Anda
             if(pass === "admin123") {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('admin-main-interface').classList.remove('hidden');
                 
-                // Set wallet bawaan jika belum dikonfigurasi
+                // Ambil atau pasang wallet default bawaan
                 if(!localStorage.getItem('admin_wallet_config')) {
                     localStorage.setItem('admin_wallet_config', 'BANK BCA: 8371-291-11 a/n GamerSafe');
                 }
@@ -82,6 +81,7 @@
             }
         }
 
+        // Fungsi mengubah nomer e-wallet secara langsung ketika diketik (oninput)
         function updateKonfigurasiRekeningAdmin(nilai) {
             localStorage.setItem('admin_wallet_config', nilai);
         }
@@ -93,7 +93,7 @@
                 game: "-",
                 price: "0",
                 buyer_wallet: "-",
-                seller_wallet: "-", // Menyimpan nomor wallet pencairan milik penjual
+                seller_wallet: "-",
                 akun_id: "-",
                 akun_pass: "-",
                 status: "Menunggu Penjual Membuka Harga",
@@ -107,6 +107,18 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataAwal)
             }).then(() => muatUlangSemuaKamarServer());
+        }
+
+        // Fungsi Baru: Menghapus Room secara permanen dari Cloud API
+        function hapusKamarTransaksiPermanen(id, roomCode) {
+            if(confirm(`Apakah Anda yakin ingin MENGHAPUS KAMAR ${roomCode} secara permanen dari database?`)) {
+                fetch(`${MOCK_API_BASE}/${id}`, {
+                    method: 'DELETE'
+                }).then(() => {
+                    alert(`Kamar ${roomCode} berhasil dihapus.`);
+                    muatUlangSemharServer();
+                });
+            }
         }
 
         function muatUlangSemuaKamarServer() {
@@ -125,13 +137,18 @@
                                     <span class="text-xs font-bold text-slate-200 tracking-wide">${room.roomCode}</span>
                                     <p class="text-[9px] text-slate-500 font-mono">ID Target: ${room.id}</p>
                                 </div>
-                                <select onchange="ubahStatusKamarManual('${room.id}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg text-[10px] px-2 py-1 text-amber-400 font-mono focus:outline-none">
-                                    <option value="${room.status}" selected>Status: ${room.status}</option>
-                                    <option value="Dana Aman di Admin">Dana Aman di Admin</option>
-                                    <option value="Selesai & Dicairkan">Selesai & Dicairkan</option>
-                                    <option value="TRANSAKSI DIBATALKAN">Batalkan Transaksi</option>
-                                    <option value="DITENDANG: Pelanggaran Sistem">Tendang / Blokir Kamar</option>
-                                </select>
+                                <div class="flex items-center gap-2">
+                                    <select onchange="ubahStatusKamarManual('${room.id}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg text-[10px] px-2 py-1 text-amber-400 font-mono focus:outline-none">
+                                        <option value="${room.status}" selected>Status: ${room.status}</option>
+                                        <option value="Dana Aman di Admin">Dana Aman di Admin</option>
+                                        <option value="Selesai & Dicairkan">Selesai & Dicairkan</option>
+                                        <option value="TRANSAKSI DIBATALKAN">Batalkan Transaksi</option>
+                                        <option value="DITENDANG: Pelanggaran Sistem">Tendang / Blokir Kamar</option>
+                                    </select>
+                                    <button onclick="hapusKamarTransaksiPermanen('${room.id}', '${room.roomCode}')" class="bg-red-950 hover:bg-red-800 text-red-400 p-1.5 px-2 rounded-lg text-[10px] border border-red-900/50 cursor-pointer transition-all" title="Hapus Permanen">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2 text-[10px] font-mono bg-slate-950 p-2.5 rounded-xl border border-slate-800/60">

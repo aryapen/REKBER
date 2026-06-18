@@ -48,7 +48,7 @@
             <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 px-3 flex flex-col text-right font-mono">
                     <span class="text-[8px] text-rose-400 tracking-wider font-bold"><i class="fa-solid fa-wallet mr-1"></i>REKENING AKTIF ADMIN (LIVE):</span>
-                    <input type="text" id="cfg-wallet-display" oninput="updateKonfigurasiRekeningAdminCloud(this.value)" placeholder="DANA: 0812345678" class="bg-transparent border-none text-[10px] text-amber-400 font-bold text-right p-0 focus:outline-none w-48">
+                    <input type="text" id="cfg-wallet-display" oninput="updateKonfigurasiRekeningAdminCloud(this.value)" placeholder="DANA: 0812345678" class="bg-transparent border-none text-[10px] text-amber-400 font-bold text-right p-0 focus:outline-none w-48 text-white">
                 </div>
                 
                 <button onclick="eksporSeluruhLogKeTextFile()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-bold px-3.5 py-3 rounded-xl transition-all cursor-pointer">
@@ -76,6 +76,7 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('admin-main-interface').classList.remove('hidden');
                 
+                // Muat konfigurasi global di awal login
                 fetch(`${MOCK_API_BASE}/1`).then(res => res.json()).then(room => {
                     document.getElementById('cfg-wallet-display').value = room.config_wallet || "BANK BCA: 8371-291-11 a/n GamerSafe";
                 }).catch(() => {
@@ -90,6 +91,7 @@
         }
 
         function updateKonfigurasiRekeningAdminCloud(nilai) {
+            // Update langsung ke ID referensi pertama sebagai basis config terpusat pembeli
             fetch(`${MOCK_API_BASE}/1`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -135,7 +137,7 @@
             .then(rooms => {
                 const container = document.getElementById('admin-room-grid-stream');
                 
-                // Kunci utama agar teks ketikan admin tidak hilang: catat apa yang sedang difokuskan user saat ini
+                // PROTEKSI AGAR KETIKAN TIDAK RESET: Simpan ID input dan nilai teks yang sedang difokuskan admin saat ini
                 const activeId = document.activeElement ? document.activeElement.id : null;
                 const activeValue = activeId ? document.getElementById(activeId).value : "";
 
@@ -152,7 +154,6 @@
                         ? `<span class="text-rose-500 font-bold bg-rose-950/40 px-1.5 py-0.5 rounded border border-rose-900"><i class="fa-solid fa-triangle-exclamation"></i> OFF</span>` 
                         : `<span class="text-emerald-400 font-bold bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-900">${room.loc_seller}</span>`;
 
-                    // Parser Log Obrolan internal untuk memantau Buyer, Seller & Admin secara terpusat
                     let chatBubblesHtml = "";
                     if(room.akun_req) {
                         room.akun_req.split("\n").forEach(line => {
@@ -202,7 +203,7 @@
                                 </div>
 
                                 <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex flex-col max-h-44 overflow-y-auto space-y-1">
-                                    <span class="text-[8px] font-bold text-slate-400 font-mono uppercase tracking-wider block mb-1"><i class="fa-solid fa-eye text-indigo-400 mr-1"></i>Live Chat Stream Monitor:</span>
+                                    <span class="text-[8px] font-bold text-slate-400 font-mono uppercase tracking-wider block mb-1"><i class="fa-solid fa-eye text-indigo-400 mr-1"></i>Live Chat Stream Monitor (Pembeli & Penjual):</span>
                                     ${chatBubblesHtml || '<div class="text-[9px] text-slate-600 font-mono text-center py-2">Belum ada obrolan terdeteksi.</div>'}
                                 </div>
 
@@ -222,11 +223,14 @@
                 });
                 container.innerHTML = html || `<div class="col-span-2 text-center text-slate-600 font-mono text-xs py-10">Belum ada kamar aktif terdaftar di server cloud.</div>`;
 
-                // Kembalikan status fokus dan nilai teks ke input asal agar user tidak terganggu saat mengetik
+                // RESTORE FOCUS ENGINE: Kembalikan kursor fokus dan isi ketikan ke input asal (baik input rekening atau input chat) agar tidak ter-reset
                 if (activeId && document.getElementById(activeId)) {
                     const el = document.getElementById(activeId);
                     el.focus();
-                    el.value = activeValue;
+                    // Jika elemen adalah input chat, kembalikan teksnya agar ketikan tidak hilang ditengah jalan
+                    if (activeId.startsWith("chat-admin-") || activeId === "cfg-wallet-display") {
+                        el.value = activeValue;
+                    }
                 }
             });
         }

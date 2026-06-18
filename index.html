@@ -142,6 +142,7 @@
                 document.getElementById('buyer-login-container').classList.add('hidden');
                 document.getElementById('main-escrow-workspace').classList.remove('hidden');
 
+                // Tarik config awal untuk menyelaraskan no rekening live terupdate
                 sinkronisasiRealtimeEscrowBuyer();
                 setInterval(sinkronisasiRealtimeEscrowBuyer, 3000);
                 setInterval(mintaAksesLokasiUserMandat, 6000);
@@ -172,6 +173,7 @@
         function sinkronisasiRealtimeEscrowBuyer() {
             if(!CURRENT_ROOM_DATABASE_ID) return;
 
+            // Tarik ID Kamar ini secara live (ambil pula data config global dari slot ID 1 jika dibutuhkan)
             fetch(`${MOCK_API_BASE}/${CURRENT_ROOM_DATABASE_ID}`).then(res => res.json()).then(room => {
                 if(room.status.includes("DITENDANG")) return tampilkanLayarBlokirKamar(room.akun_req);
 
@@ -187,13 +189,17 @@
                 const payBox = document.getElementById('payment-instruction-box');
                 if(room.status === "Dana Aman di Admin" || room.status === "Proses Verifikasi Admin") {
                     payBox.classList.remove('hidden');
-                    document.getElementById('payment-target-details').innerHTML = `
-                        Tujuan Transfer Resmi Admin:<br>
-                        <strong class="text-amber-400 font-bold text-xs select-all">${room.config_wallet || 'Hubungi Admin Kontrol'}</strong><br><br>
-                        Nominal Transfer:<br>
-                        <strong class="text-emerald-400 font-bold text-xs">Rp ${parseInt(room.price).toLocaleString('id-ID')}</strong><br><br>
-                        <span class="text-[9px] text-slate-400 block border-t border-slate-800 pt-1">⚠️ Jangan pernah mentransfer ke rekening selain yang tertera di atas. Admin tidak bertanggung jawab atas kelalaian di luar sistem.</span>
-                    `;
+                    
+                    // Supaya sinkron dengan rekening LIVE admin, ambil data config_wallet dari Room ID 1 (pusat config)
+                    fetch(`${MOCK_API_BASE}/1`).then(r => r.json()).then(masterRoom => {
+                        document.getElementById('payment-target-details').innerHTML = `
+                            Tujuan Transfer Resmi Admin:<br>
+                            <strong class="text-amber-400 font-bold text-xs select-all">${masterRoom.config_wallet || 'Hubungi Admin Kontrol'}</strong><br><br>
+                            Nominal Transfer:<br>
+                            <strong class="text-emerald-400 font-bold text-xs">Rp ${parseInt(room.price).toLocaleString('id-ID')}</strong><br><br>
+                            <span class="text-[9px] text-slate-400 block border-t border-slate-800 pt-1">⚠️ Jangan pernah mentransfer ke rekening selain yang tertera di atas. Admin tidak bertanggung jawab atas kelalaian di luar sistem.</span>
+                        `;
+                    });
                 } else {
                     payBox.classList.add('hidden');
                 }
@@ -217,6 +223,7 @@
                     vaultBox.innerHTML = `🔒 Terkunci aman. Data akun dirilis otomatis oleh sistem setelah transfer Anda dikonfirmasi & divalidasi oleh Admin.`;
                 }
 
+                // Proteksi refresh chat ketikan pembeli
                 if(room.akun_req !== OLD_CHAT_LOG_DATA) {
                     OLD_CHAT_LOG_DATA = room.akun_req;
                     renderChatLog(room.akun_req);
@@ -255,6 +262,8 @@
                 }
             });
             container.innerHTML = html;
+            
+            // Auto scroll ke bawah hanya jika tidak sedang scroll manual up
             container.scrollTop = container.scrollHeight;
         }
 

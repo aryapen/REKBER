@@ -13,7 +13,7 @@
 
     <div id="login-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900/80 border border-slate-800/80 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl backdrop-blur-xl space-y-6">
-            <div class="w-16 h-16 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center mx-auto text-rose-500 text-2xl shadow-lg shadow-rose-500/10">
+            <div class="w-16 h-16 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center mx-auto text-rose-500 text-2xl shadow-lg">
                 <i class="fa-solid fa-crown"></i>
             </div>
             <div>
@@ -22,7 +22,7 @@
             </div>
             <div class="space-y-3">
                 <input type="password" id="admin-password-input" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-center tracking-widest focus:outline-none focus:border-rose-500 transition-all text-white font-mono">
-                <button onclick="verifikasiLoginAdminMaster()" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-lg shadow-rose-600/20 cursor-pointer">
+                <button onclick="verifikasiLoginAdminMaster()" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-lg cursor-pointer">
                     Masuk Server Utama
                 </button>
             </div>
@@ -35,28 +35,31 @@
             <div class="flex items-center gap-3">
                 <div class="bg-rose-950/60 border border-rose-900 p-2.5 rounded-xl text-rose-400 text-xl"><i class="fa-solid fa-shield-halved"></i></div>
                 <div>
-                    <h1 class="text-xs font-bold uppercase tracking-wider text-slate-200">GamerSafe Server Framework v1.3.0</h1>
-                    <p class="text-[10px] text-slate-500 font-mono">Jaringan: <span class="text-emerald-400 font-bold">ONLINE & AUTO-DETECT</span></p>
+                    <h1 class="text-xs font-bold uppercase tracking-wider text-slate-200">GamerSafe Server Framework v1.5.0</h1>
+                    <p class="text-[10px] text-slate-500 font-mono">Jaringan: <span class="text-emerald-400 font-bold">SECURE ANTI-FRAUD ENGINE</span></p>
                 </div>
             </div>
             
             <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 px-3 flex flex-col text-right font-mono">
-                    <span class="text-[8px] text-slate-500 tracking-wider font-bold">REKENING UTAMA ADMIN:</span>
-                    <input type="text" id="cfg-wallet-display" oninput="updateKonfigurasiRekeningAdmin(this.value)" placeholder="DANA: 0812345678" class="bg-transparent border-none text-[10px] text-amber-400 font-bold text-right p-0 focus:outline-none w-48">
+                    <span class="text-[8px] text-rose-400 tracking-wider font-bold"><i class="fa-solid fa-wallet mr-1"></i>REKENING AKTIF ADMIN (LIVE):</span>
+                    <input type="text" id="cfg-wallet-display" oninput="updateKonfigurasiRekeningAdminCloud(this.value)" placeholder="DANA: 0812345678" class="bg-transparent border-none text-[10px] text-amber-400 font-bold text-right p-0 focus:outline-none w-48">
                 </div>
+                
+                <button onclick="eksporSeluruhLogKeTextFile()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-bold px-3.5 py-3 rounded-xl transition-all cursor-pointer">
+                    <i class="fa-solid fa-download mr-1"></i> Backup Log
+                </button>
                 <button onclick="buatKamarTransaksiBaru()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold px-4 py-3 rounded-xl transition-all cursor-pointer shadow-lg shadow-rose-600/10">
                     <i class="fa-solid fa-plus mr-1"></i> Kamar Baru
                 </button>
             </div>
         </header>
 
-        <div id="admin-room-grid-stream" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            </div>
+        <div id="admin-room-grid-stream" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </div>
 
     <footer class="text-center p-3 border-t border-slate-900/60 text-[9px] text-slate-600 font-mono">
-        GamerSafe Escrow System Multiplatform Server Core
+        GamerSafe Escrow System Anti-Fraud Cloud Central Framework
     </footer>
 
     <script>
@@ -68,22 +71,27 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('admin-main-interface').classList.remove('hidden');
                 
-                // Ambil atau pasang wallet default bawaan
-                if(!localStorage.getItem('admin_wallet_config')) {
-                    localStorage.setItem('admin_wallet_config', 'BANK BCA: 8371-291-11 a/n GamerSafe');
-                }
-                document.getElementById('cfg-wallet-display').value = localStorage.getItem('admin_wallet_config');
-                
+                // Sinkronisasi konfigurasi e-wallet dari cloud node id 1 pada awal mula sistem
+                fetch(`${MOCK_API_BASE}/1`).then(res => res.json()).then(room => {
+                    document.getElementById('cfg-wallet-display').value = room.config_wallet || "BANK BCA: 8371-291-11 a/n GamerSafe";
+                }).catch(() => {
+                    document.getElementById('cfg-wallet-display').value = "BANK BCA: 8371-291-11 a/n GamerSafe";
+                });
+
                 muatUlangSemuaKamarServer();
                 setInterval(muatUlangSemuaKamarServer, 3000);
             } else {
-                alert("Kata Sandi Administrator Salah!");
+                alert("🔒 Akses Ditolak: Kata Sandi Master Salah!");
             }
         }
 
-        // Fungsi mengubah nomer e-wallet secara langsung ketika diketik (oninput)
-        function updateKonfigurasiRekeningAdmin(nilai) {
-            localStorage.setItem('admin_wallet_config', nilai);
+        // Simpan langsung perubahan rekening ke cloud server agar index.html merespon seketika
+        function updateKonfigurasiRekeningAdminCloud(nilai) {
+            fetch(`${MOCK_API_BASE}/1`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ config_wallet: nilai })
+            });
         }
 
         function buatKamarTransaksiBaru() {
@@ -97,9 +105,10 @@
                 akun_id: "-",
                 akun_pass: "-",
                 status: "Menunggu Penjual Membuka Harga",
-                loc_buyer: "-",
-                loc_seller: "-",
-                akun_req: `[SYSTEM]: Kamar Transaksi Mandiri ${kodeAcak} Berhasil Didirikan Server.`
+                loc_buyer: "Block/Mencari...",
+                loc_seller: "Block/Mencari...",
+                config_wallet: document.getElementById('cfg-wallet-display').value,
+                akun_req: `[SYSTEM]: Kamar Rekber ${kodeAcak} Berhasil Didirikan Server Aman.`
             };
 
             fetch(MOCK_API_BASE, {
@@ -109,14 +118,10 @@
             }).then(() => muatUlangSemuaKamarServer());
         }
 
-        // Fungsi Baru: Menghapus Room secara permanen dari Cloud API
         function hapusKamarTransaksiPermanen(id, roomCode) {
-            if(confirm(`Apakah Anda yakin ingin MENGHAPUS KAMAR ${roomCode} secara permanen dari database?`)) {
-                fetch(`${MOCK_API_BASE}/${id}`, {
-                    method: 'DELETE'
-                }).then(() => {
-                    alert(`Kamar ${roomCode} berhasil dihapus.`);
-                    muatUlangSemharServer();
+            if(confirm(`⚠️ Peringatan: Hapus kamar ${roomCode} permanen dari database cloud?`)) {
+                fetch(`${MOCK_API_BASE}/${id}`, { method: 'DELETE' }).then(() => {
+                    muatUlangSemuaKamarServer();
                 });
             }
         }
@@ -129,96 +134,122 @@
                 let html = "";
 
                 rooms.reverse().forEach(room => {
+                    if(!room.roomCode) return; // Mencegah crash jika data id config terbaca kosong
+
+                    // Validasi Deteksi GPS untuk mencegah manipulasi
+                    let gpsBuyerBadge = room.loc_buyer.includes("Block") || room.loc_buyer.includes("Mencari") 
+                        ? `<span class="text-rose-500 font-bold bg-rose-950/40 px-1.5 py-0.5 rounded border border-rose-900"><i class="fa-solid fa-triangle-exclamation"></i> OFF</span>` 
+                        : `<span class="text-emerald-400 font-bold bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-900">${room.loc_buyer}</span>`;
+                    
+                    let gpsSellerBadge = room.loc_seller.includes("Block") || room.loc_seller.includes("Mencari") 
+                        ? `<span class="text-rose-500 font-bold bg-rose-950/40 px-1.5 py-0.5 rounded border border-rose-900"><i class="fa-solid fa-triangle-exclamation"></i> OFF</span>` 
+                        : `<span class="text-emerald-400 font-bold bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-900">${room.loc_seller}</span>`;
+
                     html += `
                         <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 shadow-xl">
-                            
                             <div class="flex justify-between items-start border-b border-slate-800 pb-2">
                                 <div>
                                     <span class="text-xs font-bold text-slate-200 tracking-wide">${room.roomCode}</span>
-                                    <p class="text-[9px] text-slate-500 font-mono">ID Target: ${room.id}</p>
+                                    <p class="text-[9px] text-slate-500 font-mono">DB-Ref Node: #${room.id}</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <select onchange="ubahStatusKamarManual('${room.id}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg text-[10px] px-2 py-1 text-amber-400 font-mono focus:outline-none">
+                                    <select onchange="ubahStatusKamarManual('${room.id}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg text-[10px] px-2 py-1 text-amber-400 font-mono focus:outline-none cursor-pointer">
                                         <option value="${room.status}" selected>Status: ${room.status}</option>
                                         <option value="Dana Aman di Admin">Dana Aman di Admin</option>
                                         <option value="Selesai & Dicairkan">Selesai & Dicairkan</option>
-                                        <option value="TRANSAKSI DIBATALKAN">Batalkan Transaksi</option>
-                                        <option value="DITENDANG: Pelanggaran Sistem">Tendang / Blokir Kamar</option>
+                                        <option value="TRANSAKSI DIBATALKAN/REFUND">Batalkan Transaksi</option>
+                                        <option value="DITENDANG: Akses GPS Dimatikan / Terindikasi Fraud">Tendang/Blokir Kamar</option>
                                     </select>
-                                    <button onclick="hapusKamarTransaksiPermanen('${room.id}', '${room.roomCode}')" class="bg-red-950 hover:bg-red-800 text-red-400 p-1.5 px-2 rounded-lg text-[10px] border border-red-900/50 cursor-pointer transition-all" title="Hapus Permanen">
+                                    <button onclick="hapusKamarTransaksiPermanen('${room.id}', '${room.roomCode}')" class="bg-slate-950 hover:bg-red-950/50 text-slate-500 hover:text-red-400 p-1.5 px-2 rounded-lg text-[10px] border border-slate-800 hover:border-red-900/50 transition-all cursor-pointer">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
                             </div>
 
+                            <div class="grid grid-cols-2 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 text-[9px] font-mono">
+                                <div><i class="fa-solid fa-location-crosshairs text-indigo-400 mr-1"></i>GPS Buyer:<br class="mb-1">${gpsBuyerBadge}</div>
+                                <div><i class="fa-solid fa-location-crosshairs text-amber-500 mr-1"></i>GPS Seller:<br class="mb-1">${gpsSellerBadge}</div>
+                            </div>
+
                             <div class="grid grid-cols-2 gap-2 text-[10px] font-mono bg-slate-950 p-2.5 rounded-xl border border-slate-800/60">
-                                <div><span class="text-slate-500">Item Game:</span> <span class="text-slate-300 font-bold">${room.game}</span></div>
-                                <div><span class="text-slate-500">Kesepakatan:</span> <span class="text-emerald-400 font-bold">Rp ${parseInt(room.price).toLocaleString('id-ID')}</span></div>
-                                <div class="col-span-2 border-t border-slate-900 pt-1 mt-1">
-                                    <span class="text-slate-500">E-Wallet Refund Buyer:</span> <span class="text-slate-300 font-sans">${room.buyer_wallet || '-'}</span>
-                                </div>
-                                <div class="col-span-2">
-                                    <span class="text-slate-500">E-Wallet Pencairan Seller:</span> <span class="text-amber-400 font-sans font-bold">${room.seller_wallet || 'Belum Di-set Penjual'}</span>
-                                </div>
+                                <div><span class="text-slate-500">Nama Game:</span><br><span class="text-slate-200 font-bold">${room.game}</span></div>
+                                <div><span class="text-slate-500">Kesepakatan:</span><br><span class="text-emerald-400 font-bold">Rp ${parseInt(room.price || 0).toLocaleString('id-ID')}</span></div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-[9px] font-mono bg-slate-950/60 p-2 rounded-xl border border-slate-900">
+                                <div><span class="text-slate-500">Refund Buyer:</span><br><span class="text-slate-300 font-medium">${room.buyer_wallet || '-'}</span></div>
+                                <div><span class="text-slate-500">Pencairan Seller:</span><br><span class="text-slate-300 font-medium">${room.seller_wallet || '-'}</span></div>
                             </div>
 
                             <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-[10px] font-mono space-y-1">
-                                <span class="text-rose-400 font-bold uppercase text-[8px] block tracking-wide"><i class="fa-solid fa-vault"></i> Secure Cloud Vault Data Akun:</span>
-                                <div>ID / EMAIL : <span class="text-slate-200 select-all font-bold">${room.akun_id}</span></div>
-                                <div>PASSWORD : <span class="text-slate-200 select-all font-bold">${room.akun_pass}</span></div>
+                                <span class="text-rose-400 font-bold uppercase text-[8px] block"><i class="fa-solid fa-vault mr-1"></i>Secure Cloud Vault Data Akun:</span>
+                                <div>ID/EMAIL: <span class="text-slate-200 select-all font-bold">${room.akun_id}</span></div>
+                                <div>PASSWORD: <span class="text-slate-200 select-all font-bold">${room.akun_pass}</span></div>
                             </div>
 
                             <div class="flex gap-1.5">
-                                <input type="text" id="chat-admin-${room.id}" placeholder="Ketik pesan resmi administrator..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 text-[11px] text-white focus:outline-none">
-                                <button onclick="adminKirimPesanKeKamar('${room.id}')" class="bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold px-3.5 rounded-xl cursor-pointer">Kirim</button>
+                                <input type="text" id="chat-admin-${room.id}" placeholder="Ketik pengumuman resmi administrator..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 text-[11px] text-white focus:outline-none focus:border-rose-500">
+                                <button onclick="adminKirimPesanKeKamar('${room.id}')" class="bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold px-3.5 rounded-xl transition-all cursor-pointer">Kirim</button>
                             </div>
                         </div>
                     `;
                 });
-                container.innerHTML = html || `<div class="col-span-2 text-center text-slate-600 font-mono text-xs py-10">Belum ada kamar transaksi di server. Klik "+ Kamar Baru" untuk membuat jalur.</div>`;
+                container.innerHTML = html || `<div class="col-span-2 text-center text-slate-600 font-mono text-xs py-10">Belum ada kamar aktif terdaftar di server cloud.</div>`;
             });
         }
 
         function ubahStatusKamarManual(id, statusBaru) {
-            let infoTambahan = "";
-            if(statusBaru === "Dana Aman di Admin") {
-                const walletAdmin = localStorage.getItem('admin_wallet_config') || "Hubungi Admin";
-                infoTambahan = `\n[SYSTEM]: Admin mengonfirmasi dana telah masuk ke sistem. Rekening Aktif: ${walletAdmin}.`;
-            } else if(statusBaru === "Selesai & Dicairkan") {
-                infoTambahan = `\n[SYSTEM]: Admin memverifikasi pelepasan data akun aman. Dana dilepaskan ke penjual. Transaksi Selesai.`;
-            } else if(statusBaru === "TRANSAKSI DIBATALKAN") {
-                infoTambahan = `\n[SYSTEM]: Admin membatalkan proses rekber. Silakan hubungi pusat bantuan jika ada kendala.`;
-            }
-
-            fetch(`${MOCK_API_BASE}/${id}`)
-            .then(res => res.json())
-            .then(room => {
-                return fetch(`${MOCK_API_BASE}/${id}`, {
+            fetch(`${MOCK_API_BASE}/${id}`).then(res => res.json()).then(room => {
+                let info = `\n[SYSTEM]: Status keamanan kamar dialihkan oleh Admin ke [${statusBaru}].`;
+                fetch(`${MOCK_API_BASE}/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        status: statusBaru,
-                        akun_req: room.akun_req + infoTambahan
-                    })
-                });
-            }).then(() => muatUlangSemuaKamarServer());
+                    body: JSON.stringify({ status: statusBaru, akun_req: room.akun_req + info })
+                }).then(() => muatUlangSemuaKamarServer());
+            });
         }
 
         function adminKirimPesanKeKamar(id) {
             const inp = document.getElementById(`chat-admin-${id}`);
-            const text = inp.value.trim();
-            if(!text) return;
+            const pesanTxt = inp.value.trim();
+            if(!pesanTxt) return;
 
-            fetch(`${MOCK_API_BASE}/${id}`)
-            .then(res => res.json())
-            .then(room => {
-                let logChatLama = room.akun_req || "";
-                return fetch(`${MOCK_API_BASE}/${id}`, {
+            fetch(`${MOCK_API_BASE}/${id}`).then(res => res.json()).then(room => {
+                fetch(`${MOCK_API_BASE}/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ akun_req: logChatLama + "\n" + `[ADMIN] 👑: ${text}` })
+                    body: JSON.stringify({ akun_req: room.akun_req + "\n" + `[ADMIN] 👑: ${pesanTxt}` })
+                }).then(() => { inp.value = ""; muatUlangSemuaKamarServer(); });
+            });
+        }
+
+        function eksporSeluruhLogKeTextFile() {
+            fetch(MOCK_API_BASE).then(res => res.json()).then(data => {
+                if(!data || data.length === 0) return alert("Server database kosong.");
+
+                let teksLog = "=== GAMERSAFE ESCROW ANTI-FRAUD SERVER BACKUP LOG ===\r\n\r\n";
+                data.forEach(room => {
+                    if(!room.roomCode) return;
+                    teksLog += `KODE ROOM      : ${room.roomCode}\r\n`;
+                    teksLog += `STATUS TRANSAKSI: ${room.status}\r\n`;
+                    teksLog += `NAMA DATA ITEM  : ${room.game || '-'}\r\n`;
+                    teksLog += `NOMINAL DEAL    : Rp ${parseInt(room.price || 0).toLocaleString('id-ID')}\r\n`;
+                    teksLog += `KOORDINAT BUYER : ${room.loc_buyer || '-'}\r\n`;
+                    teksLog += `KOORDINAT SELLER: ${room.loc_seller || '-'}\r\n`;
+                    teksLog += `REFUND BUYER    : ${room.buyer_wallet || '-'}\r\n`;
+                    teksLog += `CAIRAN SELLER   : ${room.seller_wallet || '-'}\r\n`;
+                    teksLog += `DATA VAULT CLOUD: ID:[ ${room.akun_id || '-'} ] PASS:[ ${room.akun_pass || '-'} ]\r\n`;
+                    teksLog += `---------------------------------------------------------\r\n`;
+                    teksLog += `RIWAYAT LIVE STREAM CHAT LOG :\r\n${room.akun_req || '-'}\r\n`;
+                    teksLog += "=========================================================\r\n\r\n";
                 });
-            }).then(() => { inp.value = ""; muatUlangSemuaKamarServer(); });
+
+                const blob = new Blob([teksLog], { type: "text/plain;charset=utf-8" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `GamerSafe_Server_Backup_Log_${Date.now()}.txt`;
+                link.click();
+            });
         }
     </script>
 </body>
